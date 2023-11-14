@@ -175,8 +175,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8972829257238871461}
-  - component: {fileID: 4186553362876418815}
-  - component: {fileID: 6675955536725864022}
   m_Layer: 0
   m_Name: ENEMY SPAWNER AND MANAGER
   m_TagString: EnemySpawner
@@ -207,129 +205,6 @@ Transform:
   - {fileID: 954184427257495023}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!82 &4186553362876418815
-AudioSource:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 79941211609768612}
-  m_Enabled: 1
-  serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 32f617811f63a47cd837e2ef035e6ad9, type: 3}
-  m_PlayOnAwake: 1
-  m_Volume: 1
-  m_Pitch: 1
-  Loop: 1
-  Mute: 0
-  Spatialize: 0
-  SpatializePostEffects: 0
-  Priority: 150
-  DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
-  Pan2D: 0
-  rolloffMode: 0
-  BypassEffects: 0
-  BypassListenerEffects: 0
-  BypassReverbZones: 0
-  rolloffCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  panLevelCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  spreadCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  reverbZoneMixCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
---- !u!114 &6675955536725864022
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 79941211609768612}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6690c5176c013814b9b4d254480d966b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AwakeEventing:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
 --- !u!1 &164064064317908222
 GameObject:
   m_ObjectHideFlags: 0
@@ -36479,7 +36354,7 @@ MonoBehaviour:
   - {x: 1.4592662, y: -1.3195198, z: 0.59182525}
   - {x: -0.43237692, y: 1.4594128, z: 1.0317924}
   - {x: -1.245021, y: 1.0146253, z: -0.5266925}
-  curEditorTab: 3
+  curEditorTab: 0
   mobs:
   - prefab: {fileID: 7855363585989963408}
     spawnRange: {x: 10, y: 10}
@@ -36513,12 +36388,14 @@ MonoBehaviour:
     - mobs:
       - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
           type: 3}
-        spawnRange: {x: 4, y: 4}
+        spawnRange: {x: 3, y: 4}
+      - prefab: {fileID: 5109955583174205713}
+        spawnRange: {x: 1, y: 1}
       timer: 0
     - mobs:
       - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
           type: 3}
-        spawnRange: {x: 4, y: 6}
+        spawnRange: {x: 1, y: 3}
       - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
           type: 3}
         spawnRange: {x: 0, y: 2}
@@ -36526,18 +36403,91 @@ MonoBehaviour:
     - mobs:
       - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
           type: 3}
-        spawnRange: {x: 6, y: 6}
+        spawnRange: {x: 2, y: 2}
       - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
           type: 3}
-        spawnRange: {x: 3, y: 4}
+        spawnRange: {x: 0, y: 0}
+      - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
+          type: 3}
+        spawnRange: {x: 1, y: 1}
       timer: 0
     - mobs:
       - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
           type: 3}
-        spawnRange: {x: 8, y: 8}
+        spawnRange: {x: 0, y: 8}
       - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
           type: 3}
-        spawnRange: {x: 3, y: 6}
+        spawnRange: {x: 1, y: 2}
+      timer: 0
+    - mobs:
+      - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
+          type: 3}
+        spawnRange: {x: 3, y: 10}
+      - prefab: {fileID: 7971472778875005147, guid: 5efa9172976044175ad4651051bc1c92,
+          type: 3}
+        spawnRange: {x: 0, y: 1}
+      - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
+          type: 3}
+        spawnRange: {x: 2, y: 2}
+      - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
+          type: 3}
+        spawnRange: {x: 0, y: 2}
+      timer: 0
+    - mobs:
+      - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
+          type: 3}
+        spawnRange: {x: 2, y: 4}
+      - prefab: {fileID: 7971472778875005147, guid: 5efa9172976044175ad4651051bc1c92,
+          type: 3}
+        spawnRange: {x: 1, y: 1}
+      - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
+          type: 3}
+        spawnRange: {x: 1, y: 3}
+      - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
+          type: 3}
+        spawnRange: {x: 1, y: 1}
+      timer: 0
+    - mobs:
+      - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
+          type: 3}
+        spawnRange: {x: 1, y: 15}
+      - prefab: {fileID: 7971472778875005147, guid: 5efa9172976044175ad4651051bc1c92,
+          type: 3}
+        spawnRange: {x: 0, y: 0}
+      - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
+          type: 3}
+        spawnRange: {x: 0, y: 0}
+      - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
+          type: 3}
+        spawnRange: {x: 0, y: 0}
+      timer: 0
+    - mobs:
+      - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
+          type: 3}
+        spawnRange: {x: 10, y: 10}
+      - prefab: {fileID: 7971472778875005147, guid: 5efa9172976044175ad4651051bc1c92,
+          type: 3}
+        spawnRange: {x: 0, y: 1}
+      - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
+          type: 3}
+        spawnRange: {x: 5, y: 5}
+      - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
+          type: 3}
+        spawnRange: {x: 0, y: 3}
+      timer: 0
+    - mobs:
+      - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
+          type: 3}
+        spawnRange: {x: 3, y: 5}
+      - prefab: {fileID: 7971472778875005147, guid: 5efa9172976044175ad4651051bc1c92,
+          type: 3}
+        spawnRange: {x: 1, y: 1}
+      - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
+          type: 3}
+        spawnRange: {x: 2, y: 2}
+      - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
+          type: 3}
+        spawnRange: {x: 0, y: 0}
       timer: 0
     - mobs:
       - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
@@ -37010,80 +36960,10 @@ MonoBehaviour:
         spawnRange: {x: 0, y: 1}
       - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
           type: 3}
-        spawnRange: {x: 5, y: 5}
+        spawnRange: {x: 2, y: 2}
       - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
           type: 3}
-        spawnRange: {x: 0, y: 3}
-      timer: 0
-    - mobs:
-      - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
-          type: 3}
-        spawnRange: {x: 10, y: 10}
-      - prefab: {fileID: 7971472778875005147, guid: 5efa9172976044175ad4651051bc1c92,
-          type: 3}
-        spawnRange: {x: 0, y: 1}
-      - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
-          type: 3}
-        spawnRange: {x: 5, y: 5}
-      - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
-          type: 3}
-        spawnRange: {x: 0, y: 3}
-      timer: 0
-    - mobs:
-      - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
-          type: 3}
-        spawnRange: {x: 10, y: 10}
-      - prefab: {fileID: 7971472778875005147, guid: 5efa9172976044175ad4651051bc1c92,
-          type: 3}
-        spawnRange: {x: 0, y: 1}
-      - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
-          type: 3}
-        spawnRange: {x: 5, y: 5}
-      - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
-          type: 3}
-        spawnRange: {x: 0, y: 3}
-      timer: 0
-    - mobs:
-      - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
-          type: 3}
-        spawnRange: {x: 10, y: 10}
-      - prefab: {fileID: 7971472778875005147, guid: 5efa9172976044175ad4651051bc1c92,
-          type: 3}
-        spawnRange: {x: 0, y: 1}
-      - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
-          type: 3}
-        spawnRange: {x: 5, y: 5}
-      - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
-          type: 3}
-        spawnRange: {x: 0, y: 3}
-      timer: 0
-    - mobs:
-      - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
-          type: 3}
-        spawnRange: {x: 10, y: 10}
-      - prefab: {fileID: 7971472778875005147, guid: 5efa9172976044175ad4651051bc1c92,
-          type: 3}
-        spawnRange: {x: 0, y: 1}
-      - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
-          type: 3}
-        spawnRange: {x: 5, y: 5}
-      - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
-          type: 3}
-        spawnRange: {x: 0, y: 3}
-      timer: 0
-    - mobs:
-      - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
-          type: 3}
-        spawnRange: {x: 10, y: 10}
-      - prefab: {fileID: 7971472778875005147, guid: 5efa9172976044175ad4651051bc1c92,
-          type: 3}
-        spawnRange: {x: 0, y: 1}
-      - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
-          type: 3}
-        spawnRange: {x: 5, y: 5}
-      - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
-          type: 3}
-        spawnRange: {x: 0, y: 3}
+        spawnRange: {x: 0, y: 2}
       timer: 0
     - mobs:
       - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
@@ -37186,74 +37066,67 @@ MonoBehaviour:
   currentWave:
   - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
       type: 3}
-    spawnRange: {x: 10, y: 10}
+    spawnRange: {x: 1, y: 15}
   - prefab: {fileID: 7971472778875005147, guid: 5efa9172976044175ad4651051bc1c92,
       type: 3}
-    spawnRange: {x: 0, y: 1}
+    spawnRange: {x: 0, y: 0}
   - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
       type: 3}
-    spawnRange: {x: 5, y: 5}
+    spawnRange: {x: 0, y: 0}
   - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
       type: 3}
-    spawnRange: {x: 0, y: 3}
-  CurWaveTab: 4
+    spawnRange: {x: 0, y: 0}
+  CurWaveTab: 6
   editorWaves:
     keys: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a0000000b0000000c0000000d0000000e0000000f000000100000001100000012000000130000001400000015000000160000001700000018000000190000001a0000001b0000001c0000001d0000001e0000001f000000200000002100000022000000230000002400000025000000260000002700000028000000290000002a0000002b0000002c0000002d0000002e0000002f0000003000000031000000
     values:
     - mobs:
       - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
           type: 3}
-        spawnRange: {x: 4, y: 4}
-      - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
-          type: 3}
-        spawnRange: {x: 0, y: 1}
+        spawnRange: {x: 1, y: 4}
+      - prefab: {fileID: 5109955583174205713}
+        spawnRange: {x: 1, y: 1}
       timer: 0
     - mobs:
       - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
           type: 3}
-        spawnRange: {x: 4, y: 6}
-      - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
-          type: 3}
-        spawnRange: {x: 0, y: 1}
+        spawnRange: {x: 1, y: 1}
       - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
           type: 3}
         spawnRange: {x: 0, y: 2}
       timer: 0
     - mobs:
       - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
-          type: 3}
-        spawnRange: {x: 6, y: 6}
-      - prefab: {fileID: 9017434365674305166, guid: 6ff8b9731385442ac9f9232490194629,
-          type: 3}
-        spawnRange: {x: 0, y: 2}
-      - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
-          type: 3}
-        spawnRange: {x: 3, y: 4}
-      timer: 0
-    - mobs:
-      - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
-          type: 3}
-        spawnRange: {x: 8, y: 8}
-      - prefab: {fileID: 7971472778875005147, guid: 5efa9172976044175ad4651051bc1c92,
-          type: 3}
-        spawnRange: {x: 0, y: 2}
-      - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
           type: 3}
         spawnRange: {x: 3, y: 6}
+      - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
+          type: 3}
+        spawnRange: {x: 1, y: 3}
+      - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
+          type: 3}
+        spawnRange: {x: 1, y: 3}
       timer: 0
     - mobs:
       - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
           type: 3}
-        spawnRange: {x: 10, y: 10}
+        spawnRange: {x: 0, y: 8}
+      - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
+          type: 3}
+        spawnRange: {x: 1, y: 2}
+      timer: 0
+    - mobs:
+      - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
+          type: 3}
+        spawnRange: {x: 6, y: 10}
       - prefab: {fileID: 7971472778875005147, guid: 5efa9172976044175ad4651051bc1c92,
           type: 3}
         spawnRange: {x: 0, y: 1}
       - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
           type: 3}
-        spawnRange: {x: 5, y: 5}
+        spawnRange: {x: 2, y: 2}
       - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
           type: 3}
-        spawnRange: {x: 0, y: 3}
+        spawnRange: {x: 0, y: 2}
       timer: 0
     - mobs:
       - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
@@ -37952,7 +37825,7 @@ MonoBehaviour:
   noiseEnabled: 0
   unitCount: 0
   rectangleColumnCount: 1
-  unitSpacing: 2
+  unitSpacing: 2.5
 --- !u!114 &4277614741782970251
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38023,7 +37896,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   delayBetweenEvents: 3
-  delayAfterCycle: 3
+  delayAfterCycle: 4
 --- !u!114 &22071145437621598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82603,6 +82476,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6177462337432518237}
+  - component: {fileID: 6577305741465157259}
   m_Layer: 0
   m_Name: DEADEYE DRONE SPAWNER
   m_TagString: Untagged
@@ -82634,6 +82508,33 @@ RectTransform:
   m_AnchoredPosition: {x: -0, y: 0.55}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &6577305741465157259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9185027893046811341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6690c5176c013814b9b4d254480d966b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AwakeEventing:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: CountdownTimerMine, Assembly-CSharp
+        m_MethodName: StartTimer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1001 &245615771554086065
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -83446,7 +83347,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   updateType: 0
   isSpeedBased: 0
-  hasOnStart: 0
+  hasOnStart: 1
   hasOnPlay: 0
   hasOnUpdate: 0
   hasOnStepComplete: 0
@@ -83546,7 +83447,7 @@ MonoBehaviour:
     - 10.994861
     - 19.814114
     wps:
-    - {x: -31.729984, y: -2.37, z: -4.419906}
+    - {x: -31.729984, y: -2.3699994, z: -4.419906}
     - {x: -25.520926, y: -2.7655437, z: -4.0932336}
     - {x: -16.439404, y: -3.8983712, z: -3.9611397}
     - {x: -5.4976563, y: -4.533997, z: -4.7791357}
@@ -83956,7 +83857,7 @@ PrefabInstance:
     - target: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2282142744881294372, guid: c12fcb887b5a7456a85d3cc377b67739,
         type: 3}
@@ -84021,6 +83922,12 @@ PrefabInstance:
 --- !u!4 &1166248540298542730 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6409861273747493152, guid: c12fcb887b5a7456a85d3cc377b67739,
+    type: 3}
+  m_PrefabInstance: {fileID: 5249857961778442154}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5109955583174205713 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
     type: 3}
   m_PrefabInstance: {fileID: 5249857961778442154}
   m_PrefabAsset: {fileID: 0}

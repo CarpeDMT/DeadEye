@@ -17,7 +17,10 @@ namespace TinyGiantStudio.Layout
 
         [Tooltip("For performance, it's better to leave it to false and call UpdateLayout() after making changes.\n" +
             "Turn this on if you are in a hurry or testing stuff.")]
-        public bool alwaysUpdateInPlayMode = false;
+        public bool alwaysUpdateInPlayMode = true;
+
+        [Tooltip("For performance, it's better to leave it to false and call GetAllChildBounds() when a bound(size of an element) changes")] 
+        public bool alwaysUpdateBounds = false;
 
         public LayoutElementModuleContainer elementUpdater;
 
@@ -25,8 +28,11 @@ namespace TinyGiantStudio.Layout
         public Bounds[] bounds;
 
 
+
+
+
         [ExecuteInEditMode]
-        private void Update()
+        void Update()
         {
             if (Application.isPlaying && !alwaysUpdateInPlayMode)
             {

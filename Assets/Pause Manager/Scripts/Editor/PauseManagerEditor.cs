@@ -36,6 +36,9 @@ namespace PauseManagement.Editor
 		SerializedProperty m_PlayerIdsProp;
 		SerializedProperty m_ActionNamesProp;
 #endif
+#if STEAMWORKS_NET
+		SerializedProperty m_PauseOnSteamOverlayActiveProp;
+#endif
 
 		readonly GUIContent m_UseTimeScaleGUIContent = new GUIContent("Use time scale?", "Use Unity's time scale to pause/resume the game?");
 		readonly GUIContent m_UseUnityInputManagerGUIContent = new GUIContent("Use Input Manager?", "Use entries of Unity's Input Manager defined on 'Project Settings > Input'?");
@@ -56,6 +59,10 @@ namespace PauseManagement.Editor
 		readonly GUIContent m_IncludeSystemPlayerGUIContent = new GUIContent("Include the System Player?", "Optionally include the System Player when acquiring list of players? Default is false.");
 		readonly GUIContent m_PlayerIdsGUIContent = new GUIContent("Player IDs:", "The list of player IDs from Rewired.");
 		readonly GUIContent m_ActionNamesGUIContent = new GUIContent("Action names:", "The list of actions for checking buttons.");
+#endif
+
+#if STEAMWORKS_NET
+		readonly GUIContent m_PauseOnSteamOverlayActiveGUIContent = new GUIContent("Pause on active?", "Pause when Steam Overlay is active?\nResume when Steam Overlay is inactive?");
 #endif
 
 		void OnEnable()
@@ -84,6 +91,9 @@ namespace PauseManagement.Editor
 			m_IncludeSystemPlayerProp = serializedObject.FindProperty("m_IncludeSystemPlayer");
 			m_PlayerIdsProp = serializedObject.FindProperty("m_PlayerIds");
 			m_ActionNamesProp = serializedObject.FindProperty("m_ActionNames");
+#endif
+#if STEAMWORKS_NET
+			m_PauseOnSteamOverlayActiveProp = serializedObject.FindProperty("m_PauseOnSteamOverlayActive");
 #endif
 		}
 
@@ -234,6 +244,18 @@ namespace PauseManagement.Editor
 			}
 
 			EditorGUI.indentLevel = oldIdentLevel;
+
+#if STEAMWORKS_NET
+			EditorGUILayout.Space();
+
+			EditorGUILayout.BeginHorizontal();
+			EditorGUILayout.LabelField("Steam Overlay Properties", EditorStyles.boldLabel, GUILayout.ExpandWidth(true));
+			EditorGUILayout.EndHorizontal();
+
+			EditorGUILayout.BeginHorizontal();
+			m_PauseOnSteamOverlayActiveProp.boolValue = EditorGUILayout.Toggle(m_PauseOnSteamOverlayActiveGUIContent, m_PauseOnSteamOverlayActiveProp.boolValue);
+			EditorGUILayout.EndHorizontal();
+#endif
 
 			EditorGUILayout.Space();
 

@@ -6,13 +6,14 @@ using System;
 using System.Linq;
 
 #if UNITY_EDITOR
+
 using System.Reflection;
 using UnityEditor;
+
 #endif
 
 using TinyGiantStudio.Layout;
 using TinyGiantStudio.Modules;
-
 
 namespace TinyGiantStudio.Text
 {
@@ -20,9 +21,6 @@ namespace TinyGiantStudio.Text
     [RequireComponent(typeof(TextUpdater))]
     [AddComponentMenu("Tiny Giant Studio/Modular 3D Text/3D Text", order: 200)]
     [HelpURL("https://ferdowsur.gitbook.io/modular-3d-text/text/modular-3d-text")]
-    /// <summary>
-    /// The base script to draw 3D texts
-    /// </summary>
     public class Modular3DText : MonoBehaviour
     {
         #region Variable Declaration
@@ -31,8 +29,9 @@ namespace TinyGiantStudio.Text
 
         //[TextArea] //creates unnecessary space at top in custom inspector
         [SerializeField] private string _text = string.Empty;
+
         /// <summary>
-        /// Text or any property changes trigger an automatic update of the mesh at the end of the frame. This avoids wasting resources on needless calculations when multiple properties change in the same frame. 
+        /// Text or any property changes trigger an automatic update of the mesh at the end of the frame. This avoids wasting resources on needless calculations when multiple properties change in the same frame.
         /// This behavior can be modified in the Advanced setting.
         /// </summary>
         public string Text
@@ -44,7 +43,7 @@ namespace TinyGiantStudio.Text
                 {
 #if UNITY_EDITOR
                     if (debugLogs)
-                        Debug.Log("Old Text is <color=green>" + _text + "</color>" + " new Text is <color=green>" + value + "</color>", gameObject);
+                        Debug.Log("Old Text is \"<color=green>" + _text + "</color>\"" + " new Text is \"<color=green>" + value + "</color>\"", gameObject);
 #endif
                     if (value != null)
                         _text = value;
@@ -53,7 +52,6 @@ namespace TinyGiantStudio.Text
 
                     SetTextDirty();
                 }
-
             }
         }
 
@@ -61,36 +59,39 @@ namespace TinyGiantStudio.Text
         /// This is used to check which letters need to be recreated/replaced by comparing to new text.
         /// </summary>
         public string oldText;
-        string processedText;
+
+        private string processedText;
+
         /// <summary>
         /// List of words in the text
         /// </summary>
         public string[] wordArray;
 
-
-
         /// <summary>
         /// Contains a list of all the character gameobject created by Text
         /// </summary>
         public List<GameObject> characterObjectList = new List<GameObject>();
-        List<GameObject> objectsPendingModulesApply = new List<GameObject>(); //idk why visual studio suggesting to make it readonly. It won't work as readonly 
+
+        private List<GameObject> objectsPendingModulesApply = new List<GameObject>(); //idk why visual studio suggesting to make it readonly. It won't work as readonly
 
 #if UNITY_EDITOR
+
         /// <summary>
         /// EDITOR ONLY!
         /// This holds all the reference for the all characters created to crosscheck if any characters are left over.
         /// This is due to unity editor not being able to delete/create without playmode on
         /// </summary>
         public List<GameObject> _allcharacterObjectList = new List<GameObject>();
+
 #endif
         public List<Mesh> generatedMeshes = new List<Mesh>();
-
 
         //Creation settings--------------------------------------------------------------------------------------
         public bool autoSaveMesh = false;
 
         //Main Settings------------------------------------------------------------------------------------------
         [SerializeField] private Font _font = null;
+
         public Font Font
         {
             get { return _font; }
@@ -109,8 +110,8 @@ namespace TinyGiantStudio.Text
             }
         }
 
-
         [SerializeField] private Material _material;
+
         public Material Material
         {
             get { return _material; }
@@ -129,8 +130,8 @@ namespace TinyGiantStudio.Text
             }
         }
 
-
         [SerializeField] private Vector3 _fontSize = new Vector3(8, 8, 1);
+
         /// <summary>
         /// Assigning a new font size recreates the entire text. This is to avoid interfering with anything any module or usercreated code is doing.
         /// </summary>
@@ -148,14 +149,8 @@ namespace TinyGiantStudio.Text
             }
         }
 
-
-
-
-
-
-
-
         [SerializeField] private bool _capitalize = false;
+
         /// <summary>
         /// If both Capitalize and LowerCase are true, Capitalize is applied
         /// </summary>
@@ -172,6 +167,7 @@ namespace TinyGiantStudio.Text
         }
 
         [SerializeField] private bool _lowercase = false;
+
         /// <summary>
         /// If both Capitalize and LowerCase are true, Capitalize is applied
         /// </summary>
@@ -188,7 +184,8 @@ namespace TinyGiantStudio.Text
             }
         }
 
-        [SerializeField] bool _autoLetterSize = false;
+        [SerializeField] private bool _autoLetterSize = false;
+
         /// <summary>
         /// If turned on, instead of using the predetermined size of each letter, their size is taken from the size they take in the render view.
         /// Please remember, this is letter size, this doesn't modify the font size.
@@ -208,6 +205,7 @@ namespace TinyGiantStudio.Text
         }
 
         [SerializeField] private float _wordSpacing = 1;
+
         public float WordSpacing
         {
             get { return _wordSpacing; }
@@ -222,7 +220,6 @@ namespace TinyGiantStudio.Text
             }
         }
 
-
         //Spawn effects
         public bool useModules = true;
 
@@ -230,62 +227,71 @@ namespace TinyGiantStudio.Text
         /// If true, the adding module uses MonoBehavior attached to the character created to run its coroutine. This way, if the text is deactivated, the module isn't interrupted.
         /// </summary>
         public bool startAddingModuleFromChar = false;
+
         public List<ModuleContainer> addingModules = new List<ModuleContainer>();
 
         /// <summary>
         /// If true, the deleting module uses MonoBehavior attached to the char to run the coroutine. This way, if the text is deactivated, the module isn't interrupted.
         /// </summary>
         public bool startDeletingModuleFromChar = true;
+
         public List<ModuleContainer> deletingModules = new List<ModuleContainer>();
+
         /// <summary>
         /// If set to true, deleteAfter float is used to determine when to delete a character.
         /// </summary>
         public bool customDeleteAfterDuration = false;
+
         public float deleteAfter = 1;
 
         public bool applyModuleOnNewCharacter = true;
+
         [Tooltip("If turned on, adding modules will be automatically called when a prefab with existing text is instantiated on Start() instead of only when a new character is added.")]
         public bool applyModulesOnStart = false;
+
         [Tooltip("If turned on, adding modules will be automatically called when a prefab with existing text is enabled instead of only when a new character is added")]
         public bool applyModulesOnEnable = false;
 
-        bool applyModuleFromStartOrEnable = false;
+        private bool applyModuleFromStartOrEnable = false;
 
         //advanced settings-----------------------------------------------------------------------------------------------
         [Tooltip("When text is updated, old characters are moved to their correct position if their position is moved by something like a module.")]
         public bool destroyChildObjectsWithGameObject = true;
+
         public bool repositionOldCharacters = true;
         public bool reApplyModulesToOldCharacters = false;
         //public bool activateChildObjects = true;
 
-
-
         public bool singleInPrefab = true;
         public bool combineMeshInEditor = true;
         public bool combineMeshDuringRuntime = false;
+
         [Tooltip("Don't let letters show up in hierarchy in play mode. They are still there but not visible.")]
         public bool hideLettersInHierarchyInPlayMode = false;
+
         [Tooltip("If combine mesh is turned off")]
         public bool hideLettersInHierarchyInEditMode = false;
 
         [Tooltip("Breaks prefab connection while saving prefab location, can replace prefab at that location with a click")]
         public bool canBreakOutermostPrefab = false;
+
         //bool reconnectingPrefab = false;
 
         /// <summary>
-        /// Where the prefab is saved. 
+        /// Where the prefab is saved.
         /// <br>This is only for some edge cases that can be enabled via advanced settings.</br>
         /// </summary>
         public string assetPath = string.Empty;
+
         /// <summary>
         /// Where the mesh is saved if mesh save is turned on
         /// </summary>
         public List<string> meshPaths = new List<string>();
 
-        bool createChilds;
+        private bool createChilds;
         public bool updateTextOncePerFrame = false;
-        bool runningRoutine = false;
-        [SerializeField] List<GameObject> extraLinesCreatedBecauseOfTooManyVerticies = new List<GameObject>();
+        private bool runningRoutine = false;
+        [SerializeField] private List<GameObject> extraLinesCreatedBecauseOfTooManyVerticies = new List<GameObject>();
 
         /// <summary>
         /// Named UV Remapping in the inspector for now, since that's the only thing it dictates for now.
@@ -295,6 +301,7 @@ namespace TinyGiantStudio.Text
         /// Additional post-processing types might be added in the future.
         /// </summary>
         public MeshPostProcess meshPostProcess;
+
         /// <summary>
         /// Changes mesh index format from 16 to 32 when set to true.
         /// index format 16-bit takes less memory and bandwidth.
@@ -304,9 +311,10 @@ namespace TinyGiantStudio.Text
 
         #endregion Main Variables
 
-
         #region remember inspector layout/ Editor Stuff
+
 #if UNITY_EDITOR
+
         /// <summary>
         /// This is for editor scripts. Don't use them
         /// This is used by textupdater to update the text incase text style was updated in prefab.
@@ -316,24 +324,44 @@ namespace TinyGiantStudio.Text
 
         [Tooltip("This is Editor Only.\nEven if it's turned on by accident in build, it won't print.\nNote: This will spam console logs.")]
         public bool debugLogs = false;
+
         /// <summary>
         /// Editor only. Do not use it on your script
         /// </summary>
         [HideInInspector] public bool hideOverwrittenVariablesFromInspector = true;
+
 #endif
-        #endregion remember inspector layout
 
+        #endregion remember inspector layout/ Editor Stuff
 
-
-
+        #region Scripts
+        DebugLogger _logger;
+        internal DebugLogger Logger
+        {
+            get
+            {
+                if (_logger == null)
+                    _logger = new DebugLogger(this);
+                return _logger;
+            }
+        }
+        CharacterCleanUp _characterCleanUp;
+        internal CharacterCleanUp CharacterCleanUp
+        {
+            get
+            {
+                if (_characterCleanUp == null)
+                    _characterCleanUp = new CharacterCleanUp(this);
+                return _characterCleanUp;
+            }
+        }
+        #endregion
 
         #endregion Variable Declaration
 
-
-
         #region Unity Stuff
 
-        void Start()
+        private void Start()
         {
             ////applyModuleFromStartOrEnable to make sure both start and onenable don't call at once
             ///Since on enable is already calling it, no need to update the text twice by calling it in update
@@ -344,7 +372,7 @@ namespace TinyGiantStudio.Text
             }
         }
 
-        void OnEnable()
+        private void OnEnable()
         {
             if (applyModulesOnEnable && !applyModuleFromStartOrEnable) //applyModuleFromStartOrEnable to make sure both start and onenable don't call at once
             {
@@ -357,7 +385,7 @@ namespace TinyGiantStudio.Text
             runningRoutine = false;
         }
 
-        void OnDisable()
+        private void OnDisable()
         {
             if (runningRoutine)
             {
@@ -369,12 +397,12 @@ namespace TinyGiantStudio.Text
             }
         }
 
-        void OnDestroy()
+        private void OnDestroy()
         {
             if (!gameObject.scene.isLoaded)
                 return;
 
-            if (GetComponent<MeshRenderer>() != null)
+            if (GetComponent<MeshFilter>() != null)
                 if (GetComponent<MeshFilter>().sharedMesh)
                     Destroy(GetComponent<MeshFilter>().sharedMesh);
 
@@ -389,12 +417,10 @@ namespace TinyGiantStudio.Text
 
         #endregion Unity Stuff
 
-
-
         /// <summary>
         /// Marks the text as dirty, needs to be cleaned up/Updated
         /// </summary>
-        void SetTextDirty()
+        private void SetTextDirty()
         {
 #if UNITY_EDITOR
             //Editor mode
@@ -436,9 +462,9 @@ namespace TinyGiantStudio.Text
 #endif
         }
 
-
 #if UNITY_EDITOR
-        void SetEditorDirtyToSaveChanges()
+
+        private void SetEditorDirtyToSaveChanges()
         {
             if (!this)
                 return;
@@ -451,6 +477,7 @@ namespace TinyGiantStudio.Text
             var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
         }
+
 #endif
 
         /// <summary>
@@ -481,6 +508,7 @@ namespace TinyGiantStudio.Text
         {
             Text = newText;
         }
+
         /// <summary>
         /// Updates the text instantly with the number as text.
         /// </summary>
@@ -489,6 +517,7 @@ namespace TinyGiantStudio.Text
         {
             Text = number.ToString();
         }
+
         /// <summary>
         /// Updates the text instantly with the number as text.
         /// </summary>
@@ -498,12 +527,10 @@ namespace TinyGiantStudio.Text
             Text = number.ToString();
         }
 
-
-
         public void UpdateText()
         {
 #if UNITY_EDITOR
-            ///in case of something like build is started the exact frame after update text is called, 
+            ///in case of something like build is started the exact frame after update text is called,
             ///the delayed call calls to update text when the scene doesn't exist(?) and gives a null reference just once. Has mo impact. Just looks ugly
             if (!this)
                 return;
@@ -511,14 +538,11 @@ namespace TinyGiantStudio.Text
             if (!Font)
                 return;
 
-
-
             for (int i = 0; i < extraLinesCreatedBecauseOfTooManyVerticies.Count; i++)
             {
                 DestroyObject(extraLinesCreatedBecauseOfTooManyVerticies[i]);
             }
             extraLinesCreatedBecauseOfTooManyVerticies.Clear();
-
 
             processedText = ProcessText();
             //This block is for the layout system
@@ -553,7 +577,7 @@ namespace TinyGiantStudio.Text
 
             oldText = processedText;
 
-            DeleteReplacedChars(startCreatingCharacterFromIndex);
+            CharacterCleanUp.DeleteReplacedChars(startCreatingCharacterFromIndex);
 
             if (!createChilds)
             {
@@ -575,12 +599,15 @@ namespace TinyGiantStudio.Text
 
 #if UNITY_EDITOR
                 if (!Application.isPlaying)
-                    EditorApplication.delayCall += () => CheckLeftOversInEditorAndCleanUp();
+                    EditorApplication.delayCall += () => CharacterCleanUp.CleanupChildObjectsThatNoLongerExistsInCurrentText();
+                //EditorApplication.delayCall += () => CheckLeftOversInEditorAndCleanUp();
 
                 RemoveBlink(); //This is used remove a single frame in editor where texts would show up even if the gameobject was disabled
 #endif
             }
 #if UNITY_EDITOR
+            CharacterCleanUp.CleanUpChildObjectsThatArentCharacterObject();
+
             if (!createChilds && autoSaveMesh)
             {
                 SaveMeshAsAsset(false);
@@ -588,8 +615,7 @@ namespace TinyGiantStudio.Text
 #endif
         }
 
-
-        void CreateSingleMesh()
+        private void CreateSingleMesh()
         {
             if (processedText.Length == 0)
             {
@@ -637,14 +663,11 @@ namespace TinyGiantStudio.Text
             }
             generatedMeshes.Clear();
 
-
-
             ApplyCombinedMesh(combinedMeshes);
         }
 
-        void ApplyCombinedMesh(List<Mesh> combinedMeshes)
+        private void ApplyCombinedMesh(List<Mesh> combinedMeshes)
         {
-
 #if UNITY_EDITOR
             if (Application.isPlaying)
             {
@@ -719,17 +742,17 @@ namespace TinyGiantStudio.Text
             GetComponent<MeshRenderer>().material = Material;
         }
 
-
 #if UNITY_EDITOR
+
         /// <summary>
         /// This is used remove a single frame in editor where texts would show up even if the gameobject was disabled
         /// Problem: Characters creator for deactivated texts get created, set the text as parent and gets activated.
         ///          The characters get deactivated in hierarchy next frame because the parent is deactivated
         ///          But, Since it takes a single frame, the characters appear in editor for a frame causing a blink affect
-        ///          
+        ///
         /// So, they are manually disabled
         /// </summary>
-        void RemoveBlink()
+        private void RemoveBlink()
         {
             if (!Application.isPlaying)
             {
@@ -745,14 +768,15 @@ namespace TinyGiantStudio.Text
             }
         }
 
-        void DeactivateObject(GameObject gObj)
+        private void DeactivateObject(GameObject gObj)
         {
             if (gObj)
                 gObj.SetActive(true);
         }
+
 #endif
 
-        void CreateNewChacracters(int newCharStartsFrom, int startapplyingModulesFromIndex)
+        private void CreateNewChacracters(int newCharStartsFrom, int startapplyingModulesFromIndex)
         {
             for (int i = newCharStartsFrom; i < processedText.Length; i++)
             {
@@ -769,7 +793,7 @@ namespace TinyGiantStudio.Text
             applyModuleFromStartOrEnable = false;
         }
 
-        bool ApplyModuleToThisCharacterNow(int currentCharacterIndex, int startApplyingModulesFromIndex)
+        private bool ApplyModuleToThisCharacterNow(int currentCharacterIndex, int startApplyingModulesFromIndex)
         {
             if (!useModules) //Completely stops modules
                 return false;
@@ -786,11 +810,7 @@ namespace TinyGiantStudio.Text
             return false;
         }
 
-
-
-
-
-        string ProcessText()
+        private string ProcessText()
         {
             if (Capitalize)
                 return Text.ToUpper();
@@ -802,60 +822,10 @@ namespace TinyGiantStudio.Text
 
 
 
-
-#if UNITY_EDITOR
         /// <summary>
-        /// Once in a while if compile is called multiple times again before first call to compile is finished, 
-        /// the delaycalls to create 3D meshes get inturrapted and gets stuck in limbo. 
-        /// This is to clean them up
+        /// This is used when mesh will no longer be combined.
         /// </summary>
-        void CheckLeftOversInEditorAndCleanUp()
-        {
-            for (int i = _allcharacterObjectList.Count - 1; i >= 0; i--)
-            {
-                if (_allcharacterObjectList[i] == null)
-                {
-                    _allcharacterObjectList.Remove(_allcharacterObjectList[i]);
-                    continue;
-                }
-
-                //todo:Shouldn't this be opposite
-                if (!characterObjectList.Contains(_allcharacterObjectList[i]))
-                {
-                    GameObject obj = _allcharacterObjectList[i];
-                    EditorApplication.delayCall += () =>
-                    {
-                        CleanUpDelete(obj);
-                    };
-                }
-            }
-
-            if (!hideLettersInHierarchyInEditMode && !Application.isPlaying)
-            {
-                try
-                {
-                    //if (this)
-                    {
-                        foreach (Transform child in transform)
-                        {
-                            child.hideFlags = HideFlags.None;
-                        }
-                    }
-                }
-                catch
-                {
-
-                }
-            }
-        }
-        void CleanUpDelete(GameObject obj)
-        {
-            try { DestroyImmediate(obj); }
-            catch { }
-        }
-#endif
-
-        void DestroyMeshRenderAndMeshFilter()
+        private void DestroyMeshRenderAndMeshFilter()
         {
 #if UNITY_EDITOR
             if (!EditorApplication.isPlaying)
@@ -931,8 +901,7 @@ namespace TinyGiantStudio.Text
             return createChilds;
         }
 
-
-        int NewCharacterStartsFrom()
+        private int NewCharacterStartsFrom()
         {
             int newCharStartsFrom = 0;
             if (oldText == null)//this happens when text is created runtime
@@ -962,7 +931,7 @@ namespace TinyGiantStudio.Text
             return newCharStartsFrom;
         }
 
-        void DeleteReplacedChars(int startingFrom)
+        private void DeleteReplacedChars(int startingFrom)
         {
             int toDeleteCount = characterObjectList.Count - startingFrom;
 #if UNITY_EDITOR
@@ -990,7 +959,7 @@ namespace TinyGiantStudio.Text
             }
         }
 
-        void DestroyObject(GameObject obj)
+        private void DestroyObject(GameObject obj)
         {
             if (!obj)
                 return;
@@ -1019,7 +988,7 @@ namespace TinyGiantStudio.Text
 #endif
         }
 
-        void DestroyObjectRuntime(GameObject obj)
+        private void DestroyObjectRuntime(GameObject obj)
         {
 #if UNITY_EDITOR
             if (debugLogs)
@@ -1120,7 +1089,6 @@ namespace TinyGiantStudio.Text
                             duration += deletingModules[i].variableHolders[1].floatValue;
                         }
                     }
-
                 }
 
                 if (duration > max)
@@ -1129,12 +1097,9 @@ namespace TinyGiantStudio.Text
             return max;
         }
 
-        void RunTimeDestroyObjectOnDisabledText(GameObject obj) => Destroy(obj);
+        private void RunTimeDestroyObjectOnDisabledText(GameObject obj) => Destroy(obj);
 
-
-
-
-        void CreateThisChar(char previousChar, char currentChar, bool applyModule)
+        private void CreateThisChar(char previousChar, char currentChar, bool applyModule)
         {
             if (!this)
                 return;
@@ -1157,7 +1122,7 @@ namespace TinyGiantStudio.Text
             obj.SetActive(true);
         }
 
-        void CreateThisChar(char currentChar, bool applyModule)
+        private void CreateThisChar(char currentChar, bool applyModule)
         {
             if (!this)
                 return;
@@ -1180,9 +1145,9 @@ namespace TinyGiantStudio.Text
             obj.SetActive(true);
         }
 
-        void AddCharacterToList(GameObject obj) => characterObjectList.Add(obj);
+        private void AddCharacterToList(GameObject obj) => characterObjectList.Add(obj);
 
-        void ApplyAllPendingModules()
+        private void ApplyAllPendingModules()
         {
             for (int i = 0; i < objectsPendingModulesApply.Count; i++)
             {
@@ -1191,7 +1156,7 @@ namespace TinyGiantStudio.Text
             objectsPendingModulesApply.Clear();
         }
 
-        void ApplyEffects(GameObject obj)
+        private void ApplyEffects(GameObject obj)
         {
             if (obj == null)
                 return;
@@ -1213,7 +1178,7 @@ namespace TinyGiantStudio.Text
             }
         }
 
-        void ApplyStyle(GameObject obj)
+        private void ApplyStyle(GameObject obj)
         {
             if (obj.GetComponent<Letter>())
             {
@@ -1230,8 +1195,6 @@ namespace TinyGiantStudio.Text
                 obj.GetComponent<MeshRenderer>().material = Material;
             }
 
-
-
             obj.transform.localScale = GetChildSize();
             obj.transform.localRotation = Quaternion.identity;
 
@@ -1246,7 +1209,6 @@ namespace TinyGiantStudio.Text
                 }
                 catch
                 {
-
                 }
             }
 #else
@@ -1254,9 +1216,9 @@ namespace TinyGiantStudio.Text
 #endif
         }
 
-        Vector3 GetChildSize() => new Vector3(FontSize.x, FontSize.y, FontSize.z / 2);
+        private Vector3 GetChildSize() => new Vector3(FontSize.x, FontSize.y, FontSize.z / 2);
 
-        void SetLayer(GameObject obj)
+        private void SetLayer(GameObject obj)
         {
             if (!this)
                 return;
@@ -1264,7 +1226,6 @@ namespace TinyGiantStudio.Text
             if (obj)
                 obj.layer = gameObject.layer;
         }
-
 
         //TODO: Remove
         /// <summary>
@@ -1294,18 +1255,10 @@ namespace TinyGiantStudio.Text
             moduleList.Add(moduleContainter);
         }
 
-
-
-
-
-
-
-
-
-
-
         #region Utility
+
 #if UNITY_EDITOR
+
         public bool PrefabBreakable()
         {
             if (!EditorApplication.isPlaying)
@@ -1324,11 +1277,13 @@ namespace TinyGiantStudio.Text
                 return true;
             }
         }
+
         public void ReconnectPrefabs()
         {
             //reconnectingPrefab = true;
             PrefabUtility.SaveAsPrefabAssetAndConnect(gameObject, assetPath, InteractionMode.AutomatedAction);
         }
+
         public void SaveMeshAsAsset(bool saveAsDifferent)
         {
             if (!EditorApplication.isPlaying)
@@ -1344,6 +1299,7 @@ namespace TinyGiantStudio.Text
                     SaveAsset();
             }
         }
+
         private void RemovePrefabConnection()
         {
             assetPath = AssetDatabase.GetAssetPath(PrefabUtility.GetCorrespondingObjectFromSource(gameObject));
@@ -1426,14 +1382,15 @@ namespace TinyGiantStudio.Text
             }
             return false;
         }
+
 #endif
+
         #endregion Utility
 
-
-
         #region Text in Button/List
+
         /// <summary>
-        /// Used by editor to write the values overwritten info message in the info box and hide property in inspector 
+        /// Used by editor to write the values overwritten info message in the info box and hide property in inspector
         /// </summary>
         /// <returns></returns>
         public bool DoesStyleInheritFromAParent()
@@ -1456,11 +1413,11 @@ namespace TinyGiantStudio.Text
 
             return false;
         }
+
         #endregion Text in Button/List
 
-
-
 #if UNITY_EDITOR
+
         ///For inspector only
         public List<Type> GetListOfAllLayoutGroups()
         {
@@ -1481,6 +1438,7 @@ namespace TinyGiantStudio.Text
         {
             return assembly.GetTypes().Where(t => baseType.IsAssignableFrom(t));
         }
+
 #endif
     }
 }

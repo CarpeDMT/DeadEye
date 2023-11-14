@@ -68,6 +68,8 @@ namespace TinyGiantStudio.Text
         SerializedProperty applyPressCompleteModuleContainers;
         SerializedProperty pressCompleteModuleContainers;
 
+        SerializedProperty switchCurrentControlSchemeInPlayerInputWhenFocused;
+
         SerializedProperty selectedItem;
 
 
@@ -91,6 +93,8 @@ namespace TinyGiantStudio.Text
         AnimBool showSelectedItemSettings;
         AnimBool showNormalItemSettings;
         AnimBool showChildVisualSettings;
+
+        AnimBool showInputSettings;
 
         Texture documentationIcon;
         //Texture addIcon;
@@ -490,18 +494,55 @@ namespace TinyGiantStudio.Text
 
         void InputSettings()
         {
-            string buttonText = "Add input system";
-            buttonText = UpdateWarnings(buttonText);
+            GUILayout.BeginVertical(EditorStyles.helpBox);
+            EditorGUI.indentLevel = 0;
 
-            if (GUILayout.Button(new GUIContent(buttonText, "This adds InputSystemController controller scripts and updates the methods.")))
+            GUILayout.BeginVertical(EditorStyles.toolbar);
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(30);
+            GUIContent showInputSettingsContent = new GUIContent("Input settings", "");
+            showInputSettings.target = EditorGUILayout.Foldout(showInputSettings.target, showInputSettingsContent, true, foldOutStyle);
+            Documentation("https://ferdowsur.gitbook.io/modular-3d-text/input/button-key", "Input documentations");
+            GUILayout.EndHorizontal();
+            EditorGUI.indentLevel = 1;
+            GUILayout.EndVertical();
+
+            if (EditorGUILayout.BeginFadeGroup(showInputSettings.faded))
             {
-                SetupInputSystem();
-            }
+                GUILayout.Space(5);
+
+                string buttonText = "Add input system";
+                buttonText = UpdateWarnings(buttonText);
+
 #if ENABLE_INPUT_SYSTEM
-            if (myTarget.gameObject.GetComponent<PlayerInput>())
-                if (!myTarget.gameObject.GetComponent<PlayerInput>().actions)
-                    EditorGUILayout.HelpBox("Couldnt find InputActionAsset. Please attach 3D Text UI Control from preference.", MessageType.Info);
+                float width = EditorGUIUtility.labelWidth;
+                EditorGUIUtility.labelWidth = 500;
+                GUILayout.BeginHorizontal();
+                EditorGUILayout.PropertyField(switchCurrentControlSchemeInPlayerInputWhenFocused, new GUIContent(""), GUILayout.MaxWidth(25));
+                GUILayout.Label(new GUIContent(" Switch Current Control Scheme In Player Input When Focused", "If you are using the new input system, this calls the SwitchCurrentControlScheme() method in Player input, when Focus() is called."), EditorStyles.wordWrappedLabel);
+                GUILayout.EndHorizontal();
+                EditorGUIUtility.labelWidth = width;
 #endif
+
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button(new GUIContent(buttonText, "This adds InputSystemController controller scripts and updates the methods."), GUILayout.MaxHeight(30), GUILayout.MaxWidth(160)))
+                {
+                    SetupInputSystem();
+                }
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+#if ENABLE_INPUT_SYSTEM
+                if (myTarget.gameObject.GetComponent<PlayerInput>())
+                    if (!myTarget.gameObject.GetComponent<PlayerInput>().actions)
+                        EditorGUILayout.HelpBox("Couldnt find InputActionAsset. Please attach 3D Text UI Control from preference.", MessageType.Info);
+#endif
+
+                GUILayout.Space(5);
+            }
+            EditorGUILayout.EndFadeGroup();
+
+            GUILayout.EndVertical();
         }
 
         string UpdateWarnings(string buttonText)
@@ -586,7 +627,7 @@ namespace TinyGiantStudio.Text
             if (usePlayerInput)
             {
                 if (!myTarget.gameObject.GetComponent<PlayerInput>())
-                    myTarget.gameObject.AddComponent<PlayerInput>().neverAutoSwitchControlSchemes = true;
+                    myTarget.gameObject.AddComponent<PlayerInput>().neverAutoSwitchControlSchemes = true; //Why was the never auto switch needed? 10/10/2023
 
                 if (settings)
                     myTarget.gameObject.GetComponent<PlayerInput>().actions = settings.InputActionAsset;
@@ -723,6 +764,8 @@ namespace TinyGiantStudio.Text
             autoFocusOnStart = soTarget.FindProperty("autoFocusOnStart");
             autoFocusFirstItem = soTarget.FindProperty("autoFocusFirstItem");
 
+            switchCurrentControlSchemeInPlayerInputWhenFocused = soTarget.FindProperty("switchCurrentControlSchemeInPlayerInputWhenFocused");
+
             GetStyleReferences();
 
             GetModulesReferences();
@@ -796,6 +839,9 @@ namespace TinyGiantStudio.Text
             showNormalItemSettings.valueChanged.AddListener(Repaint);
             showChildVisualSettings = new AnimBool(false);
             showChildVisualSettings.valueChanged.AddListener(Repaint);
+
+            showInputSettings = new AnimBool(false);
+            showInputSettings.valueChanged.AddListener(Repaint);
         }
 
         void GenerateStyle()

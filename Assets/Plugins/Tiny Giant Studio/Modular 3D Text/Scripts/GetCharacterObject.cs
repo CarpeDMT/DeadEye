@@ -57,7 +57,7 @@ namespace TinyGiantStudio.Text
             {
                 CheckLeftOver(obj, text);
 
-                obj.AddComponent<DelayCallCleanUp>().text = text;
+                obj.AddComponent<DelayCallCharacterCleanUp>().text = text;
             }
             else
             {
@@ -102,7 +102,7 @@ namespace TinyGiantStudio.Text
             {
                 CheckLeftOver(obj, text);
 
-                obj.AddComponent<DelayCallCleanUp>().text = text;
+                obj.AddComponent<DelayCallCharacterCleanUp>().text = text;
             }
             else
             {

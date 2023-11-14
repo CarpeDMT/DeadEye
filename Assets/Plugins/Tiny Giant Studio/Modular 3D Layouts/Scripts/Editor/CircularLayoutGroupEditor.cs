@@ -27,6 +27,8 @@ namespace TinyGiantStudio.Layout
         SerializedProperty radiusDecreaseRate;
 
         SerializedProperty alwaysUpdateInPlayMode;
+        SerializedProperty alwaysUpdateBounds;
+
         SerializedProperty elementUpdater;
 
         Texture rightIcon;
@@ -64,7 +66,7 @@ namespace TinyGiantStudio.Layout
                     myTarget.GetComponent<Modular3DText>().CleanUpdateText();
                 else
 #endif
-                    myTarget.UpdateLayout();
+                myTarget.UpdateLayout();
 
             }
 
@@ -101,7 +103,7 @@ namespace TinyGiantStudio.Layout
                     myTarget.GetComponent<Modular3DText>().CleanUpdateText();
                 else
 #endif
-                    myTarget.UpdateLayout();
+                myTarget.UpdateLayout();
 
             }
             GUI.color = Color.white;
@@ -117,6 +119,7 @@ namespace TinyGiantStudio.Layout
 
             GUILayout.Space(5);
             MText_Editor_Methods.ItalicHorizontalField(alwaysUpdateInPlayMode, "Always update in playmode", "For performance, it's better to leave it to false and call UpdateLayout() after making changes.\nTurn this on if you are in a hurry or testing stuff.", FieldSize.gigantic);
+            MText_Editor_Methods.ItalicHorizontalField(alwaysUpdateBounds, "Always update bounds", "For performance, it's better to leave it to false and call GetAllChildBounds() when a bound(size of an element) changes", FieldSize.gigantic);
             GUILayout.Space(5);
             if (EditorGUI.EndChangeCheck())
             {
@@ -127,7 +130,7 @@ namespace TinyGiantStudio.Layout
                         myTarget.GetComponent<Modular3DText>().CleanUpdateText();
 #endif
                 }
-                EditorUtility.SetDirty(myTarget);
+                //EditorUtility.SetDirty(myTarget);
             }
         }
 
@@ -153,6 +156,8 @@ namespace TinyGiantStudio.Layout
             radiusDecreaseRate = soTarget.FindProperty("radiusDecreaseRate");
 
             alwaysUpdateInPlayMode = soTarget.FindProperty("alwaysUpdateInPlayMode");
+            alwaysUpdateBounds = soTarget.FindProperty("alwaysUpdateBounds");
+
             elementUpdater = soTarget.FindProperty("elementUpdater");
         }
     }

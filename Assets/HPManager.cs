@@ -11,20 +11,29 @@ public class HPManager : MonoBehaviour
 {
     public int HP;
     public Text hpText;
+    public int DefaultHP;
+
     public UnityEvent GameOver;
     public DeadeyeUnit UnitGuy;
   //  public TimeController time;
     public GameObject[] Lasers;
     public GameObject KillSpawner;
     public GameObject[] Drones;
+    public bool ifArcade;
    /*  public bool Waiting;
     public float WaitingTime;
   
      */
     private void Awake()
-    {
+    {   
         hpText = this.GetComponent<Text>();
-        HP = 3;
+       // if (ifArcade = false)
+       // {
+        HP = DefaultHP;
+      //  }
+      //  else {
+    //        HP = 10000;
+      //  }
         HPUpdate();
        /*  Waiting = false; */
     
@@ -33,7 +42,7 @@ public class HPManager : MonoBehaviour
     public void HPUpdate()
     {
     
-        hpText.text = (""+HP);
+        hpText.text = ("");
 
         if (HP<=0)
         { 
@@ -65,20 +74,36 @@ public class HPManager : MonoBehaviour
         {
             Destroy(unit);
         }
-
-        HP = 3;
-
+       // if (ifArcade = false){
+        HP = DefaultHP;
+       // }
+      //  else { HP = 10000;}
        // Drones.Clear(); // Clear the list after destroying all units
 
        // UnitGuy.DestroyAllUnits();
     }
 
+    public void ArcadeMode()
+    {
+        ifArcade = true;
+    }
+
+    public void LivesMode()
+    
+    {
+        ifArcade = false;
+    }
+
     public void GameStartGuy()
     {
-        HP = 3;
+      //  if (ifArcade = false){
+        HP = 5;
+        
+        //else{ HP = 10000;}
         HPUpdate();
     }
-        }
+}
+
    /* public  System.Collections.IEnumerator WaitingTimeActivate()
     {
          yield return new WaitForSeconds(WaitingTime);

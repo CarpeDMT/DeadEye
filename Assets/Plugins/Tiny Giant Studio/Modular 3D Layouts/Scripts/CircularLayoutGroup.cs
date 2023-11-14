@@ -55,6 +55,9 @@ namespace TinyGiantStudio.Layout
             if (totalActiveChildCount == 0)
                 return;
 
+            if (!Application.isPlaying || alwaysUpdateBounds || TotalActiveChildCount() != bounds.Length)
+                bounds = GetAllChildBounds();
+
             bounds = GetAllChildBounds();
             float totalSize = TotalYSize(bounds);
 

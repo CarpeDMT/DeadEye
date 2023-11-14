@@ -11,17 +11,24 @@ namespace PauseManagement.Editor
 #endif
 	public class PauseManagerSetup
 	{
+		private static string PAUSE_MANAGER_VERSION = string.Empty;
+
 		#region Scripting Define Symbols
 
 		/// <summary>
 		/// Scripting Define Symbol for Unity's Input System
 		/// </summary>
-		private const string INPUT_SYSTEM_DEFINE = "PAUSE_MANAGER_INPUT_SYSTEM";
+		private const string PAUSE_MANAGER_INPUT_SYSTEM = "PAUSE_MANAGER_INPUT_SYSTEM";
 
 		/// <summary>
 		/// Scripting Define Symbol for Rewired's Input System
 		/// </summary>
-		private const string REWIRED_DEFINE = "PAUSE_MANAGER_REWIRED";
+		private const string PAUSE_MANAGER_REWIRED = "PAUSE_MANAGER_REWIRED";
+		
+		/// <summary>
+		/// Scripting Define Symbol for Steamworks.NET
+		/// </summary>
+		private const string PAUSE_MANAGER_STEAMWORKS_NET = "STEAMWORKS_NET";
 
 		#endregion
 
@@ -47,15 +54,60 @@ namespace PauseManagement.Editor
 #if UNITY_EDITOR
 		static PauseManagerSetup()
 		{
+			SetupVersion();
+
 			AcquireDefineSymbols();
 
-			HandlePackagePresency("com.unity.inputsystem", INPUT_SYSTEM_DEFINE);
-
-			HandleTypePresency(REWIRED_TYPE_NAME, REWIRED_DEFINE);
+			HandleInputSystem();
+			HandleRewired();
 
 			SaveDefineSymbols();
 		}
+
+		#region Menu
+
+		/// <summary>
+		/// 
+		/// </summary>
+		[MenuItem("Tools / Pause Manager / Scripting Define Symbols / Setup", false, 1)]
+		static void Setup()
+		{
+			AcquireDefineSymbols();
+			RemoveDefines(
+				PAUSE_MANAGER_INPUT_SYSTEM,
+				PAUSE_MANAGER_REWIRED,
+				PAUSE_MANAGER_STEAMWORKS_NET
+			);
+			SaveDefineSymbols();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		[MenuItem("Tools / Pause Manager / About", false, 100)]
+		static void About()
+		{
+			SetupVersion();
+
+			EditorUtility.DisplayDialog("Pause Manager", string.Format("Made by Gabriel Pereira{0}{0}Version: {1}", Environment.NewLine, PAUSE_MANAGER_VERSION), "OK");
+		}
+
+		#endregion
 #endif
+
+		/// <summary>
+		/// 
+		/// </summary>
+		private static void SetupVersion()
+		{
+			PAUSE_MANAGER_VERSION = string.Empty;
+
+			var type = Type.GetType("PauseManagement.Core.PauseManager, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+			var field = type.GetField("Version", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.FlattenHierarchy);
+
+			if (field != null)
+				PAUSE_MANAGER_VERSION = field.GetValue(null) as string;
+		}
 
 		/// <summary>
 		/// 
@@ -67,6 +119,19 @@ namespace PauseManagement.Editor
 			var definesString = PlayerSettings.GetScriptingDefineSymbolsForGroup(group);
 
 			Symbols = definesString.Split(';').ToList();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		private static void HandleInputSystem()
+		{
+			HandlePackagePresency("com.unity.inputsystem", PAUSE_MANAGER_INPUT_SYSTEM);
+		}
+
+		private static void HandleRewired()
+		{
+			HandleTypePresency(REWIRED_TYPE_NAME, PAUSE_MANAGER_REWIRED);
 		}
 
 		/// <summary>
@@ -119,8 +184,7 @@ namespace PauseManagement.Editor
 		private static void HandleTypePresency(string typeName, params string[] defines)
 		{
 			if (IsTypePresent(typeName))
-				foreach (var define in defines)
-					AddDefines(define);
+				AddDefines(defines);
 			else
 				RemoveDefines(defines);
 		}
@@ -141,6 +205,8 @@ namespace PauseManagement.Editor
 		/// <param name="defines"></param>
 		private static void RemoveDefines(params string[] defines)
 		{
+			if (defines == null) return;
+
 			foreach (var define in defines)
 				Symbols.Remove(define);
 		}
@@ -151,6 +217,8 @@ namespace PauseManagement.Editor
 		/// <param name="defines"></param>
 		private static void AddDefines(params string[] defines)
 		{
+			if (defines == null) return;
+
 			foreach (var define in defines)
 			{
 				if (IsDefineAdded(define)) return;

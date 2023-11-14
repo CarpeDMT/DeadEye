@@ -7,6 +7,9 @@ using UnityEngine.InputSystem;
 #if PAUSE_MANAGER_REWIRED
 using Rewired;
 #endif
+#if STEAMWORKS_NET
+using Steamworks;
+#endif
 
 namespace PauseManagement.Core
 {
@@ -15,6 +18,8 @@ namespace PauseManagement.Core
 	/// </summary>
 	public class PauseManager : MonoBehaviour
 	{
+		public const string Version = "1.4.0";
+
 		public delegate void PauseDelegateAction(bool paused);
 
 		public static event PauseDelegateAction PauseAction;
@@ -120,13 +125,22 @@ namespace PauseManagement.Core
 		/// Default is one entry with 'Cancel' value.
 		/// </summary>
 		[SerializeField]
-		private string[] m_PropertiesList = null;
+		private List<PauseProperty> m_PropertiesList = null;
 
 		/// <summary>
 		/// Custom keys for pausing, if you don't use Unity's Input Manager.
 		/// </summary>
 		[SerializeField]
-		private KeyCode[] m_PauseKeys = null;
+		private List<KeyCode> m_PauseKeys = null;
+
+#if STEAMWORKS_NET
+		/// <summary>
+		/// Pause when Steam Overlay is active.
+		/// Resume when Steam Overlay is inactive.
+		/// </summary>
+		[SerializeField]
+		private bool m_PauseOnSteamOverlayActive = true;
+#endif
 
 		/// <summary>
 		/// Events triggered when paused
@@ -150,6 +164,13 @@ namespace PauseManagement.Core
 		/// </summary>
 		private bool m_ExecuteDelegateActions = true;
 
+#if STEAMWORKS_NET
+		/// <summary>
+		/// 
+		/// </summary>
+		protected Callback<GameOverlayActivated_t> m_GameOverlayActivated;
+#endif
+
 		// Reset to default values
 		void Reset()
 		{
@@ -157,11 +178,15 @@ namespace PauseManagement.Core
 			{
 				"Cancel"
 			};
-			m_PropertiesList = new string[]
+			m_PropertiesList = new List<PauseProperty>
 			{
-				"Pause"
+				new PauseProperty
+				{
+					name = "Pause",
+					keyCode = KeyCode.Escape
+				}
 			};
-			m_PauseKeys = new KeyCode[]
+			m_PauseKeys = new List<KeyCode>
 			{
 				KeyCode.Escape
 			};
@@ -202,12 +227,9 @@ namespace PauseManagement.Core
 
 			if (assignKeyFromPrefs)
 			{
-				m_PauseKeys = new KeyCode[m_PropertiesList.Length];
-				for (int i = 0; i < m_PropertiesList.Length; i++)
+				foreach (var property in m_PropertiesList)
 				{
-					m_PauseKeys[i] = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString(m_PropertiesList[i], "Escape"));
-
-					SavePauseKeyOnPrefs(m_PropertiesList[i], m_PauseKeys[i]);
+					SavePauseKeyOnPrefs(property.name, GetPauseKeyFromPrefs(property.name, property.keyCode));
 				}
 			}
 
@@ -218,11 +240,17 @@ namespace PauseManagement.Core
 		void OnEnable()
 		{
 #if PAUSE_MANAGER_INPUT_SYSTEM
-		//	m_PauseAction.Enable();
+			pauseAction.Enable();
 #endif
 #if PAUSE_MANAGER_REWIRED
 			ReInput.ControllerConnectedEvent += OnControllerConnected;
 			ReInput.ControllerDisconnectedEvent += OnControllerDisconnected;
+#endif
+#if STEAMWORKS_NET
+			if (SteamManager.Initialized)
+			{
+				m_GameOverlayActivated = Callback<GameOverlayActivated_t>.Create(OnGameOverlayActivated);
+			}
 #endif
 		}
 
@@ -230,7 +258,7 @@ namespace PauseManagement.Core
 		void OnDisable()
 		{
 #if PAUSE_MANAGER_INPUT_SYSTEM
-		//	m_PauseAction.Disable();
+			pauseAction.Disable();
 #endif
 #if PAUSE_MANAGER_REWIRED
 			ReInput.ControllerConnectedEvent -= OnControllerConnected;
@@ -259,6 +287,10 @@ namespace PauseManagement.Core
 		// Update is called once per frame
 		void Update()
 		{
+#if !PAUSE_MANAGER_INPUT_SYSTEM
+			useUnityInputSystem = false;
+#endif
+
 			if (useUnityInputSystem) return;
 
 #if PAUSE_MANAGER_REWIRED
@@ -305,6 +337,14 @@ namespace PauseManagement.Core
 				foreach (var buttonName in m_ButtonsList)
 					if (Input.GetButtonDown(buttonName))
 						TogglePause();
+			}
+			else if (assignKeyFromPrefs)
+			{
+				foreach (var property in m_PropertiesList)
+				{
+					if (Input.GetKeyDown(property.keyCode))
+						TogglePause();
+				}
 			}
 			else
 			{
@@ -362,7 +402,7 @@ namespace PauseManagement.Core
 
 		public void StopTime()
 		{
-			Time.timeScale = 0.05f;
+			Time.timeScale = 0;
 		}
 
 		public void ResetTimeDelayed(float time)
@@ -380,6 +420,96 @@ namespace PauseManagement.Core
 			PlayerPrefs.SetString(key, keyCode.ToString());
 		}
 
+		public KeyCode GetPauseKeyFromPrefs(string key, KeyCode defaultValue)
+		{
+			return (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString(key, defaultValue.ToString()));
+		}
+
+		public void AddPauseProperty(string name, KeyCode keyCode)
+		{
+			AddPauseProperty(new PauseProperty
+			{
+				name = name,
+				keyCode = keyCode
+			});
+		}
+
+		public void AddPauseProperty(PauseProperty property)
+		{
+			m_PropertiesList.Add(property);
+
+			SavePauseKeyOnPrefs(property.name, property.keyCode);
+		}
+
+		public void SetPauseProperty(string name, KeyCode keyCode)
+		{
+			if (m_PropertiesList.Exists(prop => prop.name == name))
+			{
+				var index = m_PropertiesList.FindIndex(prop => prop.name == name);
+
+				m_PropertiesList[index] = new PauseProperty
+				{
+					name = name,
+					keyCode = keyCode
+				};
+
+				SavePauseKeyOnPrefs(name, keyCode);
+			}
+			else
+			{
+				AddPauseProperty(name, keyCode);
+			}
+		}
+
+		public void RemovePauseProperty(string name)
+		{
+			if (m_PropertiesList.Exists(prop => prop.name == name))
+			{
+				m_PropertiesList.RemoveAll(prop => prop.name == name);
+
+				if (PlayerPrefs.HasKey(name))
+				{
+					PlayerPrefs.DeleteKey(name);
+				}
+			}
+		}
+
+		public void AddPauseKey(KeyCode keyCode)
+		{
+			m_PauseKeys.Add(keyCode);
+		}
+
+		public void RemovePauseKey(KeyCode keyCode)
+		{
+			RemovePauseKey(m_PauseKeys.FindIndex(key => key == keyCode));
+		}
+
+		public void RemovePauseKey(int index)
+		{
+			if (index < 0 || index >= m_PauseKeys.Count) return;
+
+			m_PauseKeys.RemoveAt(index);
+		}
+
+#if STEAMWORKS_NET
+		private void OnGameOverlayActivated(GameOverlayActivated_t pCallback)
+		{
+			if (m_PauseOnSteamOverlayActive)
+			{
+				if (pCallback.m_bActive != 0)
+				{
+					// Steam Overlay has been activated
+					Pause();
+				}
+				else
+				{
+					// Steam Overlay has been closed
+					Resume();
+				}
+			}
+		}
+#endif
+
 		public static bool IsPaused { get; set; }
 
 		public bool ExecuteEvents
@@ -396,6 +526,13 @@ namespace PauseManagement.Core
 			{
 				m_ExecuteDelegateActions = value;
 			}
+		}
+
+		[System.Serializable]
+		public struct PauseProperty
+		{
+			public string name;
+			public KeyCode keyCode;
 		}
 	}
 }

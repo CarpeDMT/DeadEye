@@ -6,7 +6,9 @@ using UnityEditor.AnimatedValues;
 using UnityEngine;
 
 #if ENABLE_INPUT_SYSTEM
+
 using UnityEngine.InputSystem;
+
 #endif
 
 using TinyGiantStudio.Text.FontCreation;
@@ -17,52 +19,54 @@ namespace TinyGiantStudio.Text
 {
     public class AssetWindow : EditorWindow
     {
-        SerializedObject soTarget;
+        private SerializedObject soTarget;
 
-        private readonly string version = "4.2.0b";
+        /// <summary>
+        /// Don't make it serializable/editable in the inspector, because users accidentally
+        /// changing it stops updates from updating the number
+        /// </summary>
+        private readonly string version = "4.4.0b";
+
         private readonly string documentationURL = "https://ferdowsur.gitbook.io/modular-3d-text/";
         private readonly string fontCreationTroubleShootDocURL = "https://ferdowsur.gitbook.io/modular-3d-text/fonts/creating-fonts/troubleshoot";
+
         //private readonly string fontCreationInEditor_WrittenTutorialURL = "https://ferdowsur.gitbook.io/modular-3d-text/creating-fonts";
         //private readonly string fontCreationInEditor_VideoTutorialURL = "https://youtu.be/m9JwBc-0DUA";
         private readonly string forumURL = "https://forum.unity.com/threads/modular-3d-text-3d-texts-for-your-3d-game.821931/";
+
         private readonly string supportEmail = "ferdowsurasif@gmail.com";
-
-
 
         public AssetSettings settings;
         private int tab = 0;
         //private bool neverStartedBefore = true;
 
+        private GUIStyle tabStyle;
+        private GUIStyle foldOutStyle;
+        private GUIStyle bottomInformationStyle;
+        private GUIStyle groupHeaderStyle;
+        private GUIStyle groupHeaderButtonStyle;
+        private GUIStyle labelHeaderStyle;
+        private GUIStyle labelStyle;
+        private GUIStyle paragraphStyle;
+        private GUIStyle urlStyle;
+        private GUIStyle buttonStyle;
+        private GUIStyle createFontButtonStyle;
 
-        GUIStyle tabStyle;
-        GUIStyle foldOutStyle;
-        GUIStyle bottomInformationStyle;
-        GUIStyle groupHeaderStyle;
-        GUIStyle groupHeaderButtonStyle;
-        GUIStyle labelHeaderStyle;
-        GUIStyle labelStyle;
-        GUIStyle paragraphStyle;
-        GUIStyle urlStyle;
-        GUIStyle buttonStyle;
-        GUIStyle createFontButtonStyle;
+        private static Texture titleIcon;
 
-        static Texture titleIcon;
-
-        static Texture iconsPackAssetIcon;
-        static Texture betterTransformAssetIcon;
-        static Texture modularToDoListsAssetIcon;
+        private static Texture iconsPackAssetIcon;
+        private static Texture betterTransformAssetIcon;
+        private static Texture modularToDoListsAssetIcon;
 
         private static Color openedFoldoutTitleColor = new Color(124 / 255f, 170 / 255f, 239 / 255f, 0.9f);
 
-        AnimBool showInputSettings;
-        AnimBool showDefaultTextSettings;
-        AnimBool showDefaultButtonSettings;
-        AnimBool showDefaultListSettings;
-        Vector2 scrollPos;
+        private AnimBool showInputSettings;
+        private AnimBool showDefaultTextSettings;
+        private AnimBool showDefaultButtonSettings;
+        private AnimBool showDefaultListSettings;
+        private Vector2 scrollPos;
 
-
-
-        void OnEnable()
+        private void OnEnable()
         {
             titleIcon = EditorGUIUtility.Load("Assets/Plugins/Tiny Giant Studio/Modular 3D Text/Utility/Editor Icons/M3D.png") as Texture;
             iconsPackAssetIcon = EditorGUIUtility.Load("Assets/Plugins/Tiny Giant Studio/Modular 3D Text/Utility/Editor Icons/iconsPack.png") as Texture;
@@ -95,10 +99,6 @@ namespace TinyGiantStudio.Text
 #endif
         }
 
-
-
-
-
         [UnityEditor.MenuItem("Tools/Tiny Giant Studio/Modular 3D Text", false, 100)]
         public static void ShowWindow()
         {
@@ -107,7 +107,8 @@ namespace TinyGiantStudio.Text
             editorWindow.minSize = new Vector2(450, 700);
             editorWindow.Show();
         }
-        void OnGUI()
+
+        private void OnGUI()
         {
             soTarget ??= new SerializedObject(settings);
 
@@ -129,13 +130,7 @@ namespace TinyGiantStudio.Text
             }
         }
 
-
-
-
-
-
-
-        void Tabs()
+        private void Tabs()
         {
             tab = GUILayout.Toolbar(tab, new string[] { "Information", "Create Font", "Preference", "Utility", "More Assets!" }, GUILayout.MinHeight(30));
             switch (tab)
@@ -143,25 +138,30 @@ namespace TinyGiantStudio.Text
                 case 0:
                     GeneralInformation();
                     break;
+
                 case 1:
                     FontCreation();
                     break;
+
                 case 2:
                     Preference();
                     break;
+
                 case 3:
                     UtilityTab();
                     break;
+
                 case 4:
                     MoreAssets();
                     break;
+
                 default:
                     GeneralInformation();
                     break;
             }
         }
 
-        void GeneralInformation()
+        private void GeneralInformation()
         {
             GridContent("Documentation", "There is no better place to get started than the documentation.", "Documentation", documentationURL);
 
@@ -174,7 +174,7 @@ namespace TinyGiantStudio.Text
             //SetupAsseblyDefinitionFilesButton();
         }
 
-        void FontCreation()
+        private void FontCreation()
         {
             GUILayout.Space(5);
 
@@ -193,7 +193,7 @@ namespace TinyGiantStudio.Text
             GUILayout.Label("Note: You can select the exported font for detailed controls", EditorStyles.centeredGreyMiniLabel);
         }
 
-        void Preference()
+        private void Preference()
         {
             if (settings)
             {
@@ -223,14 +223,14 @@ namespace TinyGiantStudio.Text
             }
         }
 
-
-        void UtilityTab()
+        private void UtilityTab()
         {
             SetupAsseblyDefinitionFilesButton();
             GUILayout.Space(25);
             HideFlagsButtons();
         }
-        void SetupAsseblyDefinitionFilesButton()
+
+        private void SetupAsseblyDefinitionFilesButton()
         {
             GUILayout.Space(5);
             GUILayout.BeginVertical(EditorStyles.helpBox);
@@ -259,7 +259,7 @@ namespace TinyGiantStudio.Text
             GUILayout.EndVertical();
         }
 
-        void SetupAsseblyDefinition()
+        private void SetupAsseblyDefinition()
         {
             string path = "Assets/Tiny Giant Studio/Modular 3D Text/Setup Files/Assembly Definition.unitypackage";
             //#if ENABLE_INPUT_SYSTEM
@@ -279,7 +279,7 @@ namespace TinyGiantStudio.Text
             }
         }
 
-        bool IfAssemblyDefinitionAlreadyExists()
+        private bool IfAssemblyDefinitionAlreadyExists()
         {
             return
                 File.Exists("Assets/Plugins/Tiny Giant Studio/Modular 3D Text/Scripts/Modular 3D Text.asmdef")
@@ -287,7 +287,7 @@ namespace TinyGiantStudio.Text
                 File.Exists("Assets/Plugins/Tiny Giant Studio/Modular 3D Text/Scripts/Editor/Modular 3D Text Editor.asmdef");
         }
 
-        void HideFlagsButtons()
+        private void HideFlagsButtons()
         {
             if (GUILayout.Button("Mark all object in scene visible in hierarchy "))
             {
@@ -317,16 +317,16 @@ namespace TinyGiantStudio.Text
             }
         }
 
-        void MoreAssets()
+        private void MoreAssets()
         {
             AssetContent("3D Icons Mega Pack", "Get a pack of useful icons to go with your 3D UI.", "Show in Asset Store", "https://assetstore.unity.com/packages/3d/gui/3d-icons-mega-pack-173600?aid=1011ljxWe&pubref=Modular3DText", iconsPackAssetIcon);
             AssetContent("Better Transform", "The way the transform inspector should have looked by default.", "Show in Asset Store", "https://assetstore.unity.com/packages/tools/utilities/better-transform-258314?aid=1011ljxWe&pubref=Modular3DText", betterTransformAssetIcon);
             AssetContent("Modular To Do Lists", "The ultimate offline unity project management asset.", "Show in Asset Store", "https://assetstore.unity.com/packages/tools/utilities/modular-to-do-lists-pro-offline-project-management-tool-262659?aid=1011ljxWe&pubref=Modular3DText", modularToDoListsAssetIcon);
         }
 
-
         #region URL Methods
-        void Forum(string title, string description = "", string urlText = "", string url = "", string urlText2 = "", string url2 = "")
+
+        private void Forum(string title, string description = "", string urlText = "", string url = "", string urlText2 = "", string url2 = "")
         {
             GUILayout.Space(5);
             GUILayout.BeginVertical(EditorStyles.helpBox);
@@ -356,7 +356,8 @@ namespace TinyGiantStudio.Text
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
         }
-        void SupportLink()
+
+        private void SupportLink()
         {
             GUILayout.Space(5);
             string description = "Need assistance with anything? Always happy to help.";
@@ -384,9 +385,10 @@ namespace TinyGiantStudio.Text
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
         }
+
         #endregion URL Methods
 
-        void InputPreference()
+        private void InputPreference()
         {
             GUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUI.indentLevel = 0;
@@ -397,7 +399,6 @@ namespace TinyGiantStudio.Text
 
             if (EditorGUILayout.BeginFadeGroup(showInputSettings.faded))
             {
-
                 MText_Editor_Methods.HorizontalField(soTarget.FindProperty("autoCreateSceneInputSystem"), "Auto Create Scene Input System", "If enabled, will automatically create the M3D Input System gameobject in the scene when appropriate 3d ui is created.", FieldSize.gigantic);
 #if ENABLE_INPUT_SYSTEM
                 GUILayout.BeginHorizontal();
@@ -419,7 +420,7 @@ namespace TinyGiantStudio.Text
             GUILayout.EndVertical();
         }
 
-        void TextPreference()
+        private void TextPreference()
         {
             GUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUI.indentLevel = 0;
@@ -468,7 +469,8 @@ namespace TinyGiantStudio.Text
             EditorGUILayout.EndFadeGroup();
             GUILayout.EndVertical();
         }
-        void ButtonPreference()
+
+        private void ButtonPreference()
         {
             GUILayout.BeginVertical(EditorStyles.helpBox);
 
@@ -499,7 +501,6 @@ namespace TinyGiantStudio.Text
                     ApplyDefaultButtonNormalTextMaterialToScene();
                 EditorGUILayout.EndHorizontal();
 
-
                 EditorGUILayout.BeginHorizontal();
                 MText_Editor_Methods.PriviewField(soTarget.FindProperty("defaultButtonNormalBackgroundMaterial"), settings.defaultButtonNormalBackgroundMaterial, "Background Material");
                 if (GUILayout.Button("Apply", GUILayout.MaxWidth(50)))
@@ -509,9 +510,7 @@ namespace TinyGiantStudio.Text
 
                 GUILayout.EndVertical();
 
-
                 GUILayout.Space(10);
-
 
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
@@ -519,7 +518,6 @@ namespace TinyGiantStudio.Text
                 EditorGUILayout.LabelField("Selected", labelHeaderStyle);
                 EditorGUILayout.EndVertical();
                 GUILayout.Space(5);
-
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Text Size", labelStyle, GUILayout.MaxWidth(80));
@@ -577,7 +575,6 @@ namespace TinyGiantStudio.Text
                 EditorGUILayout.EndVertical();
                 GUILayout.Space(5);
 
-
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Text Size", labelStyle, GUILayout.MaxWidth(80));
                 EditorGUILayout.PropertyField(soTarget.FindProperty("defaultButtonDisabledTextSize"), GUIContent.none);
@@ -590,7 +587,6 @@ namespace TinyGiantStudio.Text
                 if (GUILayout.Button("Apply", GUILayout.MaxWidth(50)))
                     ApplyDefaultButtonDisabledTextMaterialToScene();
 
-
                 MText_Editor_Methods.PriviewField(soTarget.FindProperty("defaultButtonDisabledBackgroundMaterial"), settings.defaultButtonDisabledBackgroundMaterial, "Background Material");
                 if (GUILayout.Button("Apply", GUILayout.MaxWidth(50)))
                     ApplyDefaultButtonDisabledBackgroundMaterialToScene();
@@ -600,7 +596,8 @@ namespace TinyGiantStudio.Text
             EditorGUILayout.EndFadeGroup();
             GUILayout.EndVertical();
         }
-        void ListPreference()
+
+        private void ListPreference()
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
@@ -634,7 +631,6 @@ namespace TinyGiantStudio.Text
                 EditorGUILayout.EndHorizontal();
 
                 GUILayout.EndVertical();
-
 
                 GUILayout.Space(10);
 
@@ -720,10 +716,7 @@ namespace TinyGiantStudio.Text
             GUILayout.EndVertical();
         }
 
-
-
-
-        void ProductInformation()
+        private void ProductInformation()
         {
             GUILayout.FlexibleSpace();
 
@@ -771,7 +764,7 @@ namespace TinyGiantStudio.Text
             GUILayout.EndVertical();
         }
 
-        void ApplyDefaultFontToScene()
+        private void ApplyDefaultFontToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultFont.name + "' font to every text active object in the scene?" +
                 "You can't press Undo for this action.";
@@ -788,7 +781,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultTextSizeToScene()
+
+        private void ApplyDefaultTextSizeToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultTextSize + "' font size to every text active object in the scene?" +
                 "You can't press Undo for this action.";
@@ -809,15 +803,12 @@ namespace TinyGiantStudio.Text
             }
         }
 
-
-
-        void ApplyDefaultTextMaterialToScene()
+        private void ApplyDefaultTextMaterialToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultTextMaterial.name + "' material to every active text in the scene?" +
                 "You can't press Undo for this action.";
             if (EditorUtility.DisplayDialog("Confirmation", notice, "Apply", "Do not apply"))
             {
-
 #if UNITY_2023_1_OR_NEWER
                 foreach (var text in Object.FindObjectsByType<Modular3DText>(FindObjectsSortMode.None))
 #else
@@ -832,7 +823,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        bool ShouldItApplyTextPreference(Modular3DText text)
+
+        private bool ShouldItApplyTextPreference(Modular3DText text)
         {
             if (text.transform.parent)
             {
@@ -848,8 +840,10 @@ namespace TinyGiantStudio.Text
             }
             return false;
         }
+
 #if ENABLE_INPUT_SYSTEM
-        void ApplyInputActionAssetToScene()
+
+        private void ApplyInputActionAssetToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.InputActionAsset.name + "' to every player controller active object in the scene?" +
                "You can't press Undo for this action.";
@@ -863,11 +857,13 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
+
 #endif
 
         #region Button
+
         //Button
-        void ApplyDefaultButtonNormalTextSizeToScene()
+        private void ApplyDefaultButtonNormalTextSizeToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultButtonNormalTextSize + "' to every active button in the scene?" +
                 "You can't press Undo for this action.";
@@ -886,7 +882,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultButtonNormalTextMaterialToScene()
+
+        private void ApplyDefaultButtonNormalTextMaterialToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultButtonNormalTextMaterial.name + "' to every active button in the scene?" +
                 "You can't press Undo for this action.";
@@ -905,7 +902,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultButtonNormalBackgroundMaterialToScene()
+
+        private void ApplyDefaultButtonNormalBackgroundMaterialToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultButtonNormalBackgroundMaterial.name + "' to every active button in the scene?" +
                 "You can't press Undo for this action.";
@@ -925,7 +923,7 @@ namespace TinyGiantStudio.Text
             }
         }
 
-        void ApplyDefaultButtonSelectedTextSizeToScene()
+        private void ApplyDefaultButtonSelectedTextSizeToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultButtonSelectedTextSize + "' to every active button in the scene?" +
                 "You can't press Undo for this action.";
@@ -944,7 +942,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultButtonSelectedTextMaterialToScene()
+
+        private void ApplyDefaultButtonSelectedTextMaterialToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultButtonSelectedTextMaterial.name + "' to every active button in the scene?" +
                 "You can't press Undo for this action.";
@@ -954,14 +953,15 @@ namespace TinyGiantStudio.Text
                 foreach (var button in Object.FindObjectsByType<Button>(FindObjectsSortMode.None))
 #else
                 foreach (var button in FindObjectsOfType<Button>())
-#endif               
+#endif
                 {
                     button.SelectedTextMaterial = settings.defaultButtonSelectedTextMaterial;
                     EditorUtility.SetDirty(button);
                 }
             }
         }
-        void ApplyDefaultButtonSelectedBackgroundMaterialToScene()
+
+        private void ApplyDefaultButtonSelectedBackgroundMaterialToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultButtonSelectedBackgroundMaterial.name + "' to every active button in the scene?" +
                 "You can't press Undo for this action.";
@@ -979,7 +979,7 @@ namespace TinyGiantStudio.Text
             }
         }
 
-        void ApplyDefaultButtonPressedTextSizeToScene()
+        private void ApplyDefaultButtonPressedTextSizeToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultButtonPressedTextSize + "' to every active button in the scene?" +
                 "You can't press Undo for this action.";
@@ -996,7 +996,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultButtonPressedTextMaterialToScene()
+
+        private void ApplyDefaultButtonPressedTextMaterialToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultButtonPressedTextMaterial.name + "' to every active button in the scene?" +
                 "You can't press Undo for this action.";
@@ -1013,7 +1014,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultButtonPressedBackgroundMaterialToScene()
+
+        private void ApplyDefaultButtonPressedBackgroundMaterialToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultButtonPressedBackgroundMaterial.name + "' to every active button in the scene?" +
                 "You can't press Undo for this action.";
@@ -1031,7 +1033,7 @@ namespace TinyGiantStudio.Text
             }
         }
 
-        void ApplyDefaultButtonDisabledTextSizeToScene()
+        private void ApplyDefaultButtonDisabledTextSizeToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultButtonDisabledTextSize + "' to every active button in the scene?" +
                 "You can't press Undo for this action.";
@@ -1048,7 +1050,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultButtonDisabledTextMaterialToScene()
+
+        private void ApplyDefaultButtonDisabledTextMaterialToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultButtonDisabledTextMaterial.name + "' to every active button in the scene?" +
                 "You can't press Undo for this action.";
@@ -1065,7 +1068,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultButtonDisabledBackgroundMaterialToScene()
+
+        private void ApplyDefaultButtonDisabledBackgroundMaterialToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultButtonDisabledBackgroundMaterial.name + "' to every active button in the scene?" +
                 "You can't press Undo for this action.";
@@ -1082,12 +1086,12 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
+
         #endregion Button
 
-
-
         #region List
-        void ApplyDefaultListNormalTextSizeToScene()
+
+        private void ApplyDefaultListNormalTextSizeToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultListNormalTextSize + "' to every active list in the scene?" +
                 "You can't press Undo for this action.";
@@ -1104,7 +1108,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultListNormalTextMaterialToScene()
+
+        private void ApplyDefaultListNormalTextMaterialToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultButtonNormalTextMaterial.name + "' to every active list in the scene?" +
                 "You can't press Undo for this action.";
@@ -1121,7 +1126,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultListNormalBackgroundMaterialToScene()
+
+        private void ApplyDefaultListNormalBackgroundMaterialToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultListNormalBackgroundMaterial.name + "' to every active list in the scene?" +
                 "You can't press Undo for this action.";
@@ -1138,7 +1144,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultListSelectedTextSizeToScene()
+
+        private void ApplyDefaultListSelectedTextSizeToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultListSelectedTextSize + "' to every active list in the scene?" +
                 "You can't press Undo for this action.";
@@ -1155,7 +1162,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultListSelectedTextMaterialToScene()
+
+        private void ApplyDefaultListSelectedTextMaterialToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultListSelectedTextMaterial.name + "' to every active list in the scene?" +
                 "You can't press Undo for this action.";
@@ -1172,7 +1180,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultListSelectedBackgroundMaterialToScene()
+
+        private void ApplyDefaultListSelectedBackgroundMaterialToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultListSelectedBackgroundMaterial.name + "' to every active list in the scene?" +
                 "You can't press Undo for this action.";
@@ -1189,7 +1198,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultListPressedTextSizeToScene()
+
+        private void ApplyDefaultListPressedTextSizeToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultListPressedTextSize + "' to every active list in the scene?" +
                 "You can't press Undo for this action.";
@@ -1206,7 +1216,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultListPressedTextMaterialToScene()
+
+        private void ApplyDefaultListPressedTextMaterialToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultListPressedTextMaterial.name + "' to every active list in the scene?" +
                 "You can't press Undo for this action.";
@@ -1223,7 +1234,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultListPressedBackgroundMaterialToScene()
+
+        private void ApplyDefaultListPressedBackgroundMaterialToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultListPressedBackgroundMaterial.name + "' to every active list in the scene?" +
                 "You can't press Undo for this action.";
@@ -1240,7 +1252,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultListDisabledTextSizeToScene()
+
+        private void ApplyDefaultListDisabledTextSizeToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultListDisabledTextSize + "' to every active list in the scene?" +
                 "You can't press Undo for this action.";
@@ -1257,7 +1270,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultListDisabledTextMaterialToScene()
+
+        private void ApplyDefaultListDisabledTextMaterialToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultListDisabledTextMaterial.name + "' to every active list in the scene?" +
                 "You can't press Undo for this action.";
@@ -1274,7 +1288,8 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
-        void ApplyDefaultListDisabledBackgroundMaterialToScene()
+
+        private void ApplyDefaultListDisabledBackgroundMaterialToScene()
         {
             string notice = "Are you sure you want to apply '" + settings.defaultButtonDisabledBackgroundMaterial.name + "' to every active list in the scene?" +
                 "You can't press Undo for this action.";
@@ -1291,24 +1306,10 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
+
         #endregion List
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        void BottomButtons()
+        private void BottomButtons()
         {
             if (GUILayout.Button("Reset to default", buttonStyle, GUILayout.Height(25)))
             {
@@ -1324,7 +1325,7 @@ namespace TinyGiantStudio.Text
             HorizontalButtonURL("Common Issues", fontCreationTroubleShootDocURL);
         }
 
-        void CreateFontButton()
+        private void CreateFontButton()
         {
             GUILayout.BeginHorizontal();
             GUI.backgroundColor = new Color(0.8f, 0.9f, 1, 1);
@@ -1336,7 +1337,7 @@ namespace TinyGiantStudio.Text
             GUILayout.EndHorizontal();
         }
 
-        void CharacterInput()
+        private void CharacterInput()
         {
             GUILayout.BeginVertical(EditorStyles.helpBox);
 
@@ -1355,7 +1356,6 @@ namespace TinyGiantStudio.Text
             }
             GUILayout.EndHorizontal();
             //DrawUILine(Color.gray);
-
 
             if (settings.charInputStyle == AssetSettings.CharInputStyle.CharacterRange)
             {
@@ -1390,12 +1390,12 @@ namespace TinyGiantStudio.Text
             //    CharacterSet();
             //}
 
-
             //EditorGUILayout.HelpBox("Just a FYI: Having thousands of characters in a single file can cause issues.", MessageType.Info);
             GUILayout.Space(5);
             GUILayout.EndVertical();
         }
-        void MeshSettings()
+
+        private void MeshSettings()
         {
             string tooltip = "Keep these values to 1 unless you really need to change it. Lower smoothing value will give a flat looking font and higher is smoother." +
                 "\n\nYou can select the exported font and tweak settings like character/word spacing and even individual characters, including swapping their models.";
@@ -1406,14 +1406,11 @@ namespace TinyGiantStudio.Text
             GUILayout.Label(new GUIContent("Mesh settings", tooltip), groupHeaderStyle);
             GUILayout.EndHorizontal();
 
-
             EditorGUILayout.PropertyField(soTarget.FindProperty("meshExportStyle"), GUIContent.none);
-
-
 
             GUILayout.BeginHorizontal();
 
-            GUIContent vertexDensity = new GUIContent("Vertex Density", "How many verticies should be used. Has very little impact other than calculation time since vertext density is increased automatically if it fails to be created within the given amount.");
+            GUIContent vertexDensity = new GUIContent("Vertex Density", "How many vertices should be used. If the value is too low, it is increased automatically if it fails to be created within the given amount.");
             EditorGUILayout.LabelField(vertexDensity, labelStyle, GUILayout.MaxWidth(120));
             EditorGUILayout.PropertyField(soTarget.FindProperty("vertexDensity"), GUIContent.none);
 
@@ -1425,7 +1422,6 @@ namespace TinyGiantStudio.Text
 
             GUILayout.EndHorizontal();
 
-
             GUILayout.BeginHorizontal();
             GUIContent sizeZ = new GUIContent("Size Z/Depth", "Base depth");
             EditorGUILayout.LabelField(sizeZ, labelStyle, GUILayout.MaxWidth(120));
@@ -1433,18 +1429,22 @@ namespace TinyGiantStudio.Text
 
             GUILayout.Label("", GUILayout.MaxWidth(100));
 
-            GUIContent smoothingAngle = new GUIContent("Smoothing Angle", "Any verticies with lower angle will be smooth.");
+            GUIContent smoothingAngle = new GUIContent("Smoothing Angle", "Any vertices with lower angle will be smooth.");
             EditorGUILayout.LabelField(smoothingAngle, labelStyle, GUILayout.MaxWidth(120));
             EditorGUILayout.PropertyField(soTarget.FindProperty("smoothingAngle"), GUIContent.none);
             GUILayout.EndHorizontal();
 
             GUILayout.Space(5);
-
+            if (settings.vertexDensity > 25)
+            {
+                EditorGUILayout.HelpBox("Please note that a high vertex density will increase font creation time." +
+                    "\nIn most cases, 1 is sufficient, although a higher value will result in much more smoother font." +
+                    "\nIncreasing it too much might break the font and give weird result.", MessageType.Warning);
+            }
             GUILayout.EndVertical();
         }
 
-
-        void CreateFont()
+        private void CreateFont()
         {
             GameObject gameObject = new GameObject();
 
@@ -1487,17 +1487,14 @@ namespace TinyGiantStudio.Text
             else DestroyImmediate(gameObject);
         }
 
-        bool ExportAs()
+        private bool ExportAs()
         {
             bool exportAsObj = true;
             if (settings.meshExportStyle != AssetSettings.MeshExportStyle.exportAsObj) exportAsObj = false;
             return exportAsObj;
         }
 
-
-
-
-        void CharacterRangeInput()
+        private void CharacterRangeInput()
         {
             GUILayout.Label("Leave it to '!' & '~' for English.", EditorStyles.centeredGreyMiniLabel);
 
@@ -1510,7 +1507,8 @@ namespace TinyGiantStudio.Text
             EditorGUILayout.PropertyField(soTarget.FindProperty("endChar"), GUIContent.none);
             GUILayout.EndHorizontal();
         }
-        void UnicodeRangeInput()
+
+        private void UnicodeRangeInput()
         {
             //field
             GUILayout.BeginHorizontal();
@@ -1529,7 +1527,8 @@ namespace TinyGiantStudio.Text
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
         }
-        void CustomCharacters()
+
+        private void CustomCharacters()
         {
             //field
             EditorGUILayout.PropertyField(soTarget.FindProperty("customCharacters"), GUIContent.none);
@@ -1537,7 +1536,8 @@ namespace TinyGiantStudio.Text
             //info
             GUILayout.Label("Just type the characters you want in the font.");
         }
-        void UnicodeSequence()
+
+        private void UnicodeSequence()
         {
             //field
             EditorGUILayout.PropertyField(soTarget.FindProperty("unicodeSequence"), GUIContent.none);
@@ -1547,7 +1547,7 @@ namespace TinyGiantStudio.Text
                 "0021-007E, 00C0");
         }
 
-        void TestCharacterList()
+        private void TestCharacterList()
         {
             List<char> myCharacters = GetCharacterList();
             Debug.Log("Character count: " + myCharacters.Count);
@@ -1557,14 +1557,14 @@ namespace TinyGiantStudio.Text
             }
         }
 
-        List<char> GetCharacterFromRange(char start, char end)
+        private List<char> GetCharacterFromRange(char start, char end)
         {
             MText_NewFontCharacterRange characterRange = new MText_NewFontCharacterRange();
             List<char> characterList = characterRange.RetrieveCharactersList(start, end);
             return characterList;
         }
 
-        char ConvertCharFromUnicode(string unicode)
+        private char ConvertCharFromUnicode(string unicode)
         {
             string s = System.Text.RegularExpressions.Regex.Unescape("\\u" + unicode);
             s.ToCharArray();
@@ -1574,9 +1574,7 @@ namespace TinyGiantStudio.Text
                 return ' ';
         }
 
-
-
-        List<char> GetCharacterList()
+        private List<char> GetCharacterList()
         {
             List<char> myChars = new List<char>();
 
@@ -1605,16 +1603,17 @@ namespace TinyGiantStudio.Text
             return myChars;
         }
 
-
         #region Layout Item
-        void HorizontalButtonURL(string text, string url)
+
+        private void HorizontalButtonURL(string text, string url)
         {
             if (GUILayout.Button(text, buttonStyle, GUILayout.MinHeight(25)))
             {
                 Application.OpenURL(url);
             }
         }
-        void GridContent(string title, string description = "", string urlText = "", string url = "", string urlText2 = "", string url2 = "")
+
+        private void GridContent(string title, string description = "", string urlText = "", string url = "", string urlText2 = "", string url2 = "")
         {
             GUILayout.Space(5);
             GUILayout.BeginVertical(EditorStyles.helpBox);
@@ -1645,9 +1644,7 @@ namespace TinyGiantStudio.Text
             GUILayout.EndVertical();
         }
 
-
-
-        void AssetContent(string title, string description = "", string urlText = "", string url = "", Texture texture2D = null)
+        private void AssetContent(string title, string description = "", string urlText = "", string url = "", Texture texture2D = null)
         {
             GUILayout.Space(5);
             GUILayout.BeginVertical(EditorStyles.helpBox);
@@ -1656,13 +1653,11 @@ namespace TinyGiantStudio.Text
             float size = 65;
             GUILayout.Label(texture2D, EditorStyles.objectFieldThumb, GUILayout.MaxWidth(size), GUILayout.MaxHeight(size));
 
-
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal(EditorStyles.toolbar);
             GUILayout.Label(title, groupHeaderStyle);
             GUILayout.EndHorizontal();
             GUILayout.Space(5);
-
 
             if (description != string.Empty)
                 GUILayout.Label(description, paragraphStyle);
@@ -1680,16 +1675,17 @@ namespace TinyGiantStudio.Text
             GUILayout.EndVertical();
         }
 
-
         #endregion Layout Item
-        void VerifyReferences()
+
+        private void VerifyReferences()
         {
             if (!settings)
                 settings = StaticMethods.VerifySettings(settings);
         }
 
         #region Style stuff
-        void GenerateStyle()
+
+        private void GenerateStyle()
         {
             if (EditorGUIUtility.isProSkin)
             {
@@ -1701,10 +1697,6 @@ namespace TinyGiantStudio.Text
                 if (settings)
                     openedFoldoutTitleColor = settings.openedFoldoutTitleColor_lightSkin;
             }
-
-
-
-
 
             if (tabStyle == null)
             {
@@ -1807,7 +1799,7 @@ namespace TinyGiantStudio.Text
             }
         }
 
-        Color GetImportantLabelColor()
+        private Color GetImportantLabelColor()
         {
             if (!settings)
                 return new Color(1f, 0.8f, 0.5f, 1);
@@ -1818,7 +1810,7 @@ namespace TinyGiantStudio.Text
                 return settings.importantLabelColor_lightSkin;
         }
 
-        void DrawUILine(Color color, int thickness = 1, int padding = 1)
+        private void DrawUILine(Color color, int thickness = 1, int padding = 1)
         {
             Rect r = EditorGUILayout.GetControlRect(GUILayout.Height(padding + thickness));
             r.height = thickness;
@@ -1827,6 +1819,7 @@ namespace TinyGiantStudio.Text
             r.width += 6;
             EditorGUI.DrawRect(r, color);
         }
-        #endregion
+
+        #endregion Style stuff
     }
 }

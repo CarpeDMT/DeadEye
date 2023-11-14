@@ -1,132 +1,133 @@
 ﻿using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
-using UnityEditor.AnimatedValues;
-
+using TinyGiantStudio.EditorHelpers;
 using TinyGiantStudio.Layout;
 using TinyGiantStudio.Modules;
-using TinyGiantStudio.EditorHelpers;
+using UnityEditor;
+using UnityEditor.AnimatedValues;
+using UnityEditor.Experimental.SceneManagement;
+using UnityEngine;
 
 namespace TinyGiantStudio.Text
 {
     [CustomEditor(typeof(Modular3DText))]
     public class Modular3DTextEditor : Editor
     {
-        Modular3DText myTarget;
-        SerializedObject soTarget;
-
+        private Modular3DText myTarget;
+        private SerializedObject soTarget;
 
         //SerializedProperty text;
 
         //main settings
-        SerializedProperty font;
-        SerializedProperty material;
-        SerializedProperty fontSize;
+        private SerializedProperty font;
 
-        SerializedProperty autoLetterSize;
-        SerializedProperty _wordSpacing;
+        private SerializedProperty material;
+        private SerializedProperty fontSize;
 
+        private SerializedProperty autoLetterSize;
+        private SerializedProperty _wordSpacing;
 
         //effects
-        SerializedProperty useModules;
-        SerializedProperty startAddingModuleFromChar;
-        SerializedProperty addingModules;
-        SerializedProperty startDeletingModuleFromChar;
-        SerializedProperty deletingModules;
-        SerializedProperty customDeleteAfterDuration;
-        SerializedProperty deleteAfter;
-        SerializedProperty applyModuleOnNewCharacter;
-        SerializedProperty applyModulesOnStart;
-        SerializedProperty applyModulesOnEnable;
+        private SerializedProperty useModules;
+
+        private SerializedProperty startAddingModuleFromChar;
+        private SerializedProperty addingModules;
+        private SerializedProperty startDeletingModuleFromChar;
+        private SerializedProperty deletingModules;
+        private SerializedProperty customDeleteAfterDuration;
+        private SerializedProperty deleteAfter;
+        private SerializedProperty applyModuleOnNewCharacter;
+        private SerializedProperty applyModulesOnStart;
+        private SerializedProperty applyModulesOnEnable;
 
         //advanced settings
-        SerializedProperty destroyChildObjectsWithGameObject;
-        SerializedProperty repositionOldCharacters;
-        SerializedProperty reApplyModulesToOldCharacters;
-        SerializedProperty hideOverwrittenVariablesFromInspector;
-        SerializedProperty combineMeshInEditor;
-        SerializedProperty singleInPrefab;
-        SerializedProperty combineMeshDuringRuntime;
-        SerializedProperty hideLettersInHierarchyInPlayMode;
-        SerializedProperty updateTextOncePerFrame;
-        SerializedProperty autoSaveMesh;
-        SerializedProperty canBreakOutermostPrefab;
+        private SerializedProperty destroyChildObjectsWithGameObject;
 
-        SerializedProperty debugLogs;
-        SerializedProperty generatedMeshes;
+        private SerializedProperty repositionOldCharacters;
+        private SerializedProperty reApplyModulesToOldCharacters;
+        private SerializedProperty hideOverwrittenVariablesFromInspector;
+        private SerializedProperty combineMeshInEditor;
+        private SerializedProperty singleInPrefab;
+        private SerializedProperty combineMeshDuringRuntime;
+        private SerializedProperty hideLettersInHierarchyInPlayMode;
+        private SerializedProperty updateTextOncePerFrame;
+        private SerializedProperty autoSaveMesh;
+        private SerializedProperty canBreakOutermostPrefab;
 
-        SerializedProperty meshPostProcess;
-        SerializedProperty useIncreasedVerticiesCountForCombinedMesh;
+        private SerializedProperty debugLogs;
+        private SerializedProperty generatedMeshes;
 
+        private SerializedProperty meshPostProcess;
+        private SerializedProperty useIncreasedVerticiesCountForCombinedMesh;
 
         //Debug -- starts
-        SerializedProperty wordArray;
+        private SerializedProperty wordArray;
+
         //Debug --- ends
 
         #region Tooltips
-        readonly string addingtoolTip = "During runtime, these modules are called when new characters are added to the text. \nThis behavior can be modified.";
-        readonly string deleteingtoolTip = "During runtime, these modules are called when characters are removed from the text.";
-        readonly string modulesToolTip = "Modules are drag-and-drop scriptable objects used to animate/manipulate texts or other 3D UI elements. They are only applied during run time.";
-        #endregion
 
+        private readonly string addingtoolTip = "During runtime, these modules are called when new characters are added to the text. \nThis behavior can be modified.";
+        private readonly string deleteingtoolTip = "During runtime, these modules are called when characters are removed from the text.";
+        private readonly string modulesToolTip = "Modules are drag-and-drop scriptable objects used to animate/manipulate texts or other 3D UI elements. They are only applied during run time.";
 
+        #endregion Tooltips
 
-        AnimBool showMainSettingsInEditor;
-        AnimBool showLayoutSettingsInEditor;
-        AnimBool showModuleSettingsInEditor;
-        AnimBool showModuleRunSettingsInEditor;
-        AnimBool showAdvancedSettingsInEditor;
-        AnimBool showAdvancedInspectorSettingsInEditor;
-        AnimBool showAdvancedBehaviorSettingsInEditor;
-        AnimBool showDebugSettingsInEditor;
-
+        private AnimBool showMainSettingsInEditor;
+        private AnimBool showLayoutSettingsInEditor;
+        private AnimBool showModuleSettingsInEditor;
+        private AnimBool showModuleRunSettingsInEditor;
+        private AnimBool showAdvancedSettingsInEditor;
+        private AnimBool showAdvancedInspectorSettingsInEditor;
+        private AnimBool showAdvancedBehaviorSettingsInEditor;
+        private AnimBool showDebugSettingsInEditor;
 
         //style
-        GUIStyle toggleStyle = null;
-        GUIStyle foldOutStyle = null;
-        GUIStyle defaultLabel = null;
-        GUIStyle defaultMultilineLabel = null;
+        private GUIStyle textInputStyle = null;
 
+        private GUIStyle toggleStyle = null;
+        private GUIStyle foldOutStyle = null;
+        private GUIStyle defaultLabel = null;
+        private GUIStyle defaultMultilineLabel = null;
 
         #region colors
-        Color openedFoldoutTitleColor = new Color(136 / 255f, 173 / 255f, 234 / 255f, 1f);
-        static readonly Color openedFoldoutTitleColorDarkSkin = new Color(136 / 255f, 173 / 255f, 234 / 255f, 1f);
-        static readonly Color openedFoldoutTitleColorLightSkin = new Color(38f / 255f, 88f / 255f, 109f / 255f, 1);
+
+        private Color openedFoldoutTitleColor = new Color(136 / 255f, 173 / 255f, 234 / 255f, 1f);
+        private static readonly Color openedFoldoutTitleColorDarkSkin = new Color(136 / 255f, 173 / 255f, 234 / 255f, 1f);
+        private static readonly Color openedFoldoutTitleColorLightSkin = new Color(38f / 255f, 88f / 255f, 109f / 255f, 1);
 
         /// <summary>
         /// settings that are turned off but still visible. Not the toggle button's color
         /// </summary>
-        static readonly Color toggledOffColor = new Color(0.75f, 0.75f, 0.75f);
+        private static readonly Color toggledOffColor = new Color(0.75f, 0.75f, 0.75f);
 
-        static readonly Color toggledOnButtonColor = Color.yellow;
-        static readonly Color toggledOffButtonColor = Color.white;
+        private static readonly Color toggledOnButtonColor = Color.yellow;
+        private static readonly Color toggledOffButtonColor = Color.white;
+
         #endregion colors
-
 
         public AssetSettings settings;
 
-        Texture documentationIcon;
-        bool inheritsStyleFromParents;
-        Color originalBackgroundColor;
+        private Texture documentationIcon;
+        private bool inheritsStyleFromParents;
+        private Color originalBackgroundColor;
 
+        private readonly float iconSize = 20;
+        private readonly string layoutDocumentationURL = "https://ferdowsur.gitbook.io/layout-system/layout-group";
 
-        readonly float iconSize = 20;
-        readonly string layoutDocumentationURL = "https://ferdowsur.gitbook.io/layout-system/layout-group";
+        private readonly GUIContent combineLabel = new GUIContent("Single mesh", "Combines each letter into a single mesh.");
+        private readonly GUIContent smallCase = new GUIContent("ab", "Lower case. \n\nProperty Name: 'LowerCase'");
+        private readonly GUIContent capitalize = new GUIContent("AB", "UPPER CASE. \n\nProperty Name: 'Capitalize'");
 
-        readonly GUIContent combineLabel = new GUIContent("Single mesh", "Combines each letter into a single mesh.");
-        readonly GUIContent smallCase = new GUIContent("ab", "Lower case. \n\nProperty Name: 'LowerCase'");
-        readonly GUIContent capitalize = new GUIContent("AB", "UPPER CASE. \n\nProperty Name: 'Capitalize'");
-
-        readonly string variableName = "\n\nVariable name: ";
+        private readonly string variableName = "\n\nVariable name: ";
 
         //for grid layout
-        Alignment anchor;
-        Vector3 spacing;
-        float width;
-        float height;
+        private Alignment anchor;
 
+        private Vector3 spacing;
+        private float width;
+        private float height;
 
-        void OnEnable()
+        private void OnEnable()
         {
             myTarget = (Modular3DText)target;
             soTarget = new SerializedObject(target);
@@ -167,7 +168,7 @@ namespace TinyGiantStudio.Text
 
             WarningCheck();
 
-            myTarget.Text = EditorGUILayout.TextArea(myTarget.Text, GUILayout.Height(70));
+            myTarget.Text = EditorGUILayout.TextArea(myTarget.Text, textInputStyle, GUILayout.Height(70));
 
             GUILayout.Space(5);
 
@@ -214,12 +215,9 @@ namespace TinyGiantStudio.Text
             }
         }
 
-
-
-
-
         #region Primary Sections
-        void MainSettings()
+
+        private void MainSettings()
         {
             GUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUI.indentLevel = 1;
@@ -273,7 +271,6 @@ namespace TinyGiantStudio.Text
                 EditorGUI.indentLevel = 3;
                 DontCombineInEditorEither();
 
-
                 GUILayout.Space(5);
             }
             EditorGUILayout.EndFadeGroup();
@@ -281,10 +278,10 @@ namespace TinyGiantStudio.Text
         }
 
         /// <summary>
-        /// For perfromance, split the layout settings to two methods. 
+        /// For perfromance, split the layout settings to two methods.
         /// If it's folded, no need to do extra calculation
         /// </summary>
-        void LayoutSettings()
+        private void LayoutSettings()
         {
             GUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUI.indentLevel = 1;
@@ -297,7 +294,7 @@ namespace TinyGiantStudio.Text
             GUILayout.EndVertical();
         }
 
-        void LayoutSettings(out Alignment anchor, out Vector3 spacing, out float width, out float height)
+        private void LayoutSettings(out Alignment anchor, out Vector3 spacing, out float width, out float height)
         {
             GridLayoutGroup gridLayout = myTarget.gameObject.GetComponent<GridLayoutGroup>();
             if (!gridLayout)
@@ -330,7 +327,6 @@ namespace TinyGiantStudio.Text
                 GUILayout.Space(5);
                 ChooseLayoutGroups();
 
-
                 if (myTarget.gameObject.GetComponent<GridLayoutGroup>())
                 {
                     EditorGUILayout.LabelField("Modify the attached grid layout component to modify the Layout of the text.", defaultMultilineLabel);
@@ -357,7 +353,7 @@ namespace TinyGiantStudio.Text
             GUILayout.EndVertical();
         }
 
-        void ModuleSettings()
+        private void ModuleSettings()
         {
             GUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUI.indentLevel = 0;
@@ -370,7 +366,6 @@ namespace TinyGiantStudio.Text
             Documentation("https://ferdowsur.gitbook.io/modules/", "Modules");
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
-
 
             if (EditorGUILayout.BeginFadeGroup(showModuleSettingsInEditor.faded))
             {
@@ -401,7 +396,7 @@ namespace TinyGiantStudio.Text
             GUILayout.EndVertical();
         }
 
-        void AdvancedSettings()
+        private void AdvancedSettings()
         {
             GUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUI.indentLevel = 1;
@@ -424,7 +419,6 @@ namespace TinyGiantStudio.Text
                 if (EditorGUILayout.BeginFadeGroup(showAdvancedInspectorSettingsInEditor.faded))
                 {
                     EditorGUI.indentLevel = 0;
-                    MText_Editor_Methods.ItalicHorizontalField(debugLogs, "Debug Logs", "Editor only private variable." + variableName + "debugLogs", FieldSize.gigantic);
                     MText_Editor_Methods.ItalicHorizontalField(hideOverwrittenVariablesFromInspector, "Hide overwritten values", "Texts under button/list sometimes have styles overwritten. This hides these variables", FieldSize.gigantic);
 
                     HideLetterInHierarchy();
@@ -447,7 +441,7 @@ namespace TinyGiantStudio.Text
                 if (EditorGUILayout.BeginFadeGroup(showAdvancedBehaviorSettingsInEditor.faded))
                 {
                     EditorGUI.indentLevel = 0;
-                    MText_Editor_Methods.ItalicHorizontalField(meshPostProcess, "UV Remapping", "Variable name: meshPostProcess, type enum", FieldSize.normal);
+                    MText_Editor_Methods.ItalicHorizontalField(meshPostProcess, "UV Remapping", "Project UV is the default." + variableName + "meshPostProcess, type enum", FieldSize.normal);
 
                     string verticiesCountTooltip = "Variable name: useIncreasedVerticiesCountForCombinedMesh, type bool \n\nApplies only to combined meshes. \nChanges mesh index format from 16 to 32 when set to true. index format 16 bit takes less memory and bandwidth. With lower capacity, if max verticies count(65536) is reached, the mesh is split into separate objects.\nDoesn't auto change the index format if it is not needed";
 
@@ -477,7 +471,7 @@ namespace TinyGiantStudio.Text
             GUILayout.EndVertical();
         }
 
-        void DebugView()
+        private void DebugView()
         {
             EditorGUI.indentLevel = 1;
 
@@ -490,6 +484,9 @@ namespace TinyGiantStudio.Text
             if (EditorGUILayout.BeginFadeGroup(showDebugSettingsInEditor.faded))
             {
                 EditorGUI.indentLevel = 2;
+                MText_Editor_Methods.ItalicHorizontalField(debugLogs, "Debug Logs", "Editor only private variable." + variableName + "debugLogs", FieldSize.gigantic);
+
+                GUILayout.Space(10);
 
                 EditorGUILayout.PropertyField(wordArray);
                 EditorGUILayout.PropertyField(generatedMeshes);
@@ -500,7 +497,7 @@ namespace TinyGiantStudio.Text
             GUILayout.Space(15);
         }
 
-        void WarningCheck()
+        private void WarningCheck()
         {
             EditorGUI.indentLevel = 0;
             if (!myTarget.Font)
@@ -516,7 +513,6 @@ namespace TinyGiantStudio.Text
             {
                 if (!myTarget.Material)
                     EditorGUILayout.HelpBox("No material selected", MessageType.Error);
-
                 else if (myTarget.GetComponent<Renderer>() != null)
                 {
                     if (myTarget.GetComponent<Renderer>().sharedMaterial != myTarget.Material)
@@ -526,20 +522,19 @@ namespace TinyGiantStudio.Text
                 }
             }
         }
+
         #endregion Primary Sections
 
-
-
         #region Functions for main settings
+
         /// <summary>
         /// Direction, capitalize etc.
         /// </summary>
-        void TextStyles()
+        private void TextStyles()
         {
             EditorGUI.indentLevel = 0;
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Font Style", defaultLabel, GUILayout.MaxWidth(75));
-
 
             if (myTarget.LowerCase)
                 GUI.backgroundColor = toggledOnButtonColor;
@@ -573,19 +568,21 @@ namespace TinyGiantStudio.Text
             EditorGUILayout.EndHorizontal();
         }
 
-        void CombineMesh()
+        private void CombineMesh()
         {
             GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(combineLabel, defaultLabel, GUILayout.MinWidth(70),  GUILayout.MaxWidth(80));
+            EditorGUILayout.LabelField(combineLabel, defaultLabel, GUILayout.MinWidth(70), GUILayout.MaxWidth(80));
             MText_Editor_Methods.ItalicHorizontalField(combineMeshInEditor, "In Editor", "Combines in the Editor.\n\nbool name: 'combineMeshInEditor'", FieldSize.tiny, true);
             MText_Editor_Methods.ItalicHorizontalField(combineMeshDuringRuntime, "Runtime", "Combines during runtime. \nPlease note that enabling this might cause problems with some modules. \n\nbool name: 'combineMeshDuringRuntime'", FieldSize.tiny, true);
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
         }
+
         #endregion Functions for main settings
 
         #region Functions for Layout settings
-        void ApplyGridLayoutSettings(Alignment anchor, Vector2 spacing, float width, float height)
+
+        private void ApplyGridLayoutSettings(Alignment anchor, Vector2 spacing, float width, float height)
         {
             GridLayoutGroup gridLayoutGroup = myTarget.GetComponent<GridLayoutGroup>();
             if (gridLayoutGroup == null)
@@ -603,7 +600,7 @@ namespace TinyGiantStudio.Text
                 gridLayoutGroup.Height = height;
         }
 
-        void ChooseLayoutGroups()
+        private void ChooseLayoutGroups()
         {
             Color defaultColor = GUI.color;
 
@@ -611,7 +608,7 @@ namespace TinyGiantStudio.Text
             var groups = myTarget.GetListOfAllLayoutGroups();
             for (int i = 0; i < groups.Count; i++)
             {
-                if (i == 0) //First layout 
+                if (i == 0) //First layout
                 {
                     if (myTarget.gameObject.GetComponent(groups[i]))
                         GUI.color = toggledOnButtonColor;
@@ -652,7 +649,7 @@ namespace TinyGiantStudio.Text
             GUI.color = defaultColor;
         }
 
-        void AddLayoutComponent(List<System.Type> groups, int i)
+        private void AddLayoutComponent(List<System.Type> groups, int i)
         {
             if (myTarget.GetComponent(groups[i]))
                 return;
@@ -674,13 +671,14 @@ namespace TinyGiantStudio.Text
                 EditorApplication.delayCall += () => myTarget.gameObject.GetComponent<Modular3DText>().CleanUpdateText();
             }
         }
-        void AddGridLayout()
+
+        private void AddGridLayout()
         {
             myTarget.gameObject.AddComponent<GridLayoutGroup>();
             EditorApplication.delayCall += () => UpdateGridLayoutVariables();
         }
 
-        void UpdateGridLayoutVariables()
+        private void UpdateGridLayoutVariables()
         {
             if (myTarget.GetComponent<GridLayoutGroup>())
             {
@@ -689,20 +687,18 @@ namespace TinyGiantStudio.Text
             }
         }
 
-        string FormatClassName(string name)
+        private string FormatClassName(string name)
         {
-            if (name == "GridLayoutGroup")
-                return "Grid";
-            if (name == "CircularLayoutGroup")
-                return "Circular";
-            if (name == "LinearLayoutGroup")
-                return "Linear";
+            if (name.Contains("LayoutGroup"))
+                name = name.Replace("LayoutGroup", "");
             return name;
         }
-        #endregion
+
+        #endregion Functions for Layout settings
 
         #region Functions for Module settings
-        void RunModulesSettings()
+
+        private void RunModulesSettings()
         {
             EditorGUI.indentLevel = 1;
             GUILayout.BeginVertical(EditorStyles.helpBox);
@@ -721,7 +717,7 @@ namespace TinyGiantStudio.Text
             GUILayout.EndVertical();
         }
 
-        void DeleteAfterDuration()
+        private void DeleteAfterDuration()
         {
             string toolTip = "When a character is removed, how long it takes the mesh to be deleted.\nIf set to false, when a character is deleted, it is removed instantly or after the highest duration retrievable from modules, if there is any. \nIgnored if modules are disabled.";
 
@@ -750,7 +746,6 @@ namespace TinyGiantStudio.Text
                         EditorGUILayout.LabelField(new GUIContent("Letters are instantly removed after removed from text. If this is intentional, ignore this message, otherwise, please specify a custom delete duration."), defaultMultilineLabel);
                     }
                 }
-
             }
             else
             {
@@ -763,12 +758,14 @@ namespace TinyGiantStudio.Text
 
             GUILayout.EndVertical();
         }
-        #endregion Functions for module settings
 
-        #region Functions for advanced settings        
-        void PrefabAdvancedSettings()
+        #endregion Functions for Module settings
+
+        #region Functions for advanced settings
+
+        private void PrefabAdvancedSettings()
         {
-            if (PrefabUtility.IsPartOfPrefabInstance(myTarget.gameObject))
+            if (ShouldShowPrefabSettings())
             {
                 if (PrefabUtility.IsOutermostPrefabInstanceRoot(myTarget.gameObject))
                 {
@@ -781,7 +778,8 @@ namespace TinyGiantStudio.Text
 
             PrefabMeshSaveSettings();
         }
-        void MeshSaveSettings()
+
+        private void MeshSaveSettings()
         {
             if (myTarget.gameObject.GetComponent<MeshFilter>())
             {
@@ -820,7 +818,8 @@ namespace TinyGiantStudio.Text
                 GUILayout.EndVertical();
             }
         }
-        void PrefabMeshSaveSettings()
+
+        private void PrefabMeshSaveSettings()
         {
             if (myTarget.assetPath != "" && myTarget.assetPath != null && !EditorApplication.isPlaying)
             {
@@ -838,13 +837,13 @@ namespace TinyGiantStudio.Text
                     myTarget.assetPath = "";
                 }
             }
-            if (PrefabUtility.IsPartOfPrefabInstance(myTarget.gameObject))
+            if (ShouldShowPrefabSettings())
             {
                 MeshSaveSettings();
             }
         }
 
-        void CombineMeshSettings()
+        private void CombineMeshSettings()
         {
             DontCombineInEditorEither();
 
@@ -857,9 +856,9 @@ namespace TinyGiantStudio.Text
             }
         }
 
-        void DontCombineInEditorEither()
+        private void DontCombineInEditorEither()
         {
-            if (!myTarget.combineMeshInEditor && PrefabUtility.IsPartOfPrefabInstance(myTarget.gameObject))
+            if (!myTarget.combineMeshInEditor && ShouldShowPrefabSettings())
             {
                 GUILayout.BeginHorizontal();
 
@@ -873,7 +872,10 @@ namespace TinyGiantStudio.Text
             }
         }
 
-        void HideLetterInHierarchy()
+        private bool ShouldShowPrefabSettings() => PrefabUtility.IsPartOfPrefabInstance(myTarget.gameObject) || PrefabStageUtility.GetCurrentPrefabStage() != null;
+        
+
+        private void HideLetterInHierarchy()
         {
             EditorGUI.indentLevel = 0;
             MText_Editor_Methods.ItalicHorizontalField(hideLettersInHierarchyInPlayMode, "Hide letters in Hierarchy", "Hide letters in Hierarchy in playmode hides the game object of letters in the hierarchy. They are still there, accessible by script, just not visible. No impact except for cleaner hierarchy.", FieldSize.gigantic);
@@ -885,13 +887,20 @@ namespace TinyGiantStudio.Text
             ////MText_Editor_Methods.HorizontalField(hideLettersInHierarchyInPlayMode, "in PlayMode", "", FieldSize.large);
             //GUILayout.EndHorizontal();
         }
+
         #endregion Functions for advanced settings
 
-
-
         #region Style
-        void GenerateStyle()
+
+        private void GenerateStyle()
         {
+            textInputStyle ??= new GUIStyle(EditorStyles.textArea)
+            {
+                wordWrap = true,
+                padding = new RectOffset(5, 5, 5, 5),
+                fontSize = 12
+            };
+
             if (toggleStyle == null)
             {
                 toggleStyle = new GUIStyle(GUI.skin.button);
@@ -933,10 +942,7 @@ namespace TinyGiantStudio.Text
             //EditorStyles.popup.fixedHeight = 18;
         }
 
-
-
-
-        bool LeftButton(GUIContent content)
+        private bool LeftButton(GUIContent content)
         {
             bool clicked = false;
             Rect rect = GUILayoutUtility.GetRect(20, 20);
@@ -948,11 +954,11 @@ namespace TinyGiantStudio.Text
             GUI.EndGroup();
             return clicked;
         }
-        bool MidButton(GUIContent content)
+
+        private bool MidButton(GUIContent content)
         {
             bool clicked = false;
             Rect rect = GUILayoutUtility.GetRect(20, 20);
-
 
             GUI.BeginGroup(rect);
             if (GUI.Button(new Rect(-toggleStyle.border.left, 0, rect.width + toggleStyle.border.left + toggleStyle.border.right, rect.height), content, toggleStyle))
@@ -961,7 +967,8 @@ namespace TinyGiantStudio.Text
             GUI.EndGroup();
             return clicked;
         }
-        bool RightButton(GUIContent content)
+
+        private bool RightButton(GUIContent content)
         {
             bool clicked = false;
             Rect rect = GUILayoutUtility.GetRect(20, 20);
@@ -972,10 +979,12 @@ namespace TinyGiantStudio.Text
             GUI.EndGroup();
             return clicked;
         }
-        #endregion
+
+        #endregion Style
 
         #region Functions
-        void Documentation(string URL, string subject)
+
+        private void Documentation(string URL, string subject)
         {
             GUIContent doc = new GUIContent(documentationIcon, subject + " documentation\n\nURL: " + URL);
             if (GUILayout.Button(doc, EditorStyles.toolbarButton, GUILayout.Height(iconSize), GUILayout.Width(iconSize)))
@@ -987,7 +996,7 @@ namespace TinyGiantStudio.Text
         /// <summary>
         /// Called on Enable
         /// </summary>
-        void FindProperties()
+        private void FindProperties()
         {
             //text = soTarget.FindProperty("_text");
 
@@ -1027,19 +1036,18 @@ namespace TinyGiantStudio.Text
             //hideLettersInHierarchyInEditMode = soTarget.FindProperty("hideLettersInHierarchyInEditMode");
             updateTextOncePerFrame = soTarget.FindProperty("updateTextOncePerFrame");
 
-
             canBreakOutermostPrefab = soTarget.FindProperty("canBreakOutermostPrefab");
             //saveObjectInScene = soTarget.FindProperty("saveObjectInScene");
             debugLogs = soTarget.FindProperty("debugLogs");
             generatedMeshes = soTarget.FindProperty("generatedMeshes");
-
 
             wordArray = soTarget.FindProperty("wordArray");
 
             meshPostProcess = soTarget.FindProperty("meshPostProcess");
             useIncreasedVerticiesCountForCombinedMesh = soTarget.FindProperty("useIncreasedVerticiesCountForCombinedMesh");
         }
-        void LoadFoldoutValues()
+
+        private void LoadFoldoutValues()
         {
             showMainSettingsInEditor = new AnimBool(true);
             showMainSettingsInEditor.valueChanged.AddListener(Repaint);
@@ -1065,7 +1073,6 @@ namespace TinyGiantStudio.Text
             showDebugSettingsInEditor = new AnimBool(false);
             showDebugSettingsInEditor.valueChanged.AddListener(Repaint);
         }
-
 
         #endregion Functions
     }

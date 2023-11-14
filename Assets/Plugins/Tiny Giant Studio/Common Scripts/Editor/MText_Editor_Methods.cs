@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System.Reflection;
+using UnityEditor;
 using UnityEngine;
 
 namespace TinyGiantStudio.EditorHelpers
@@ -123,5 +124,23 @@ namespace TinyGiantStudio.EditorHelpers
                 defaultLabel.normal.textColor = new Color(0.9f, 0.9f, 0.9f, 0.75f);
             }
         }
+
+
+        private delegate bool DelegateExecuteMenuItemWithTemporaryContext(string menuItemPath, UnityEngine.Object[] objects);
+        private static DelegateExecuteMenuItemWithTemporaryContext ExecuteMenuItemWithTemporaryContext;
+        public static void RemoveRectTransform(this GameObject gameObject)
+        {
+            var rectTransform = gameObject.GetComponent<RectTransform>();
+            if (rectTransform != null)
+            {
+                if (ExecuteMenuItemWithTemporaryContext == null)
+                {
+                    ExecuteMenuItemWithTemporaryContext = typeof(EditorApplication).GetMethod("ExecuteMenuItemWithTemporaryContext", BindingFlags.Static | BindingFlags.NonPublic)
+                        .CreateDelegate(typeof(DelegateExecuteMenuItemWithTemporaryContext)) as DelegateExecuteMenuItemWithTemporaryContext;
+                }
+                ExecuteMenuItemWithTemporaryContext("CONTEXT/Component/Remove Component", new UnityEngine.Object[] { rectTransform });
+            }
+        }
+
     }
 }

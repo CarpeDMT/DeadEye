@@ -34,6 +34,7 @@ namespace TinyGiantStudio.Layout
         SerializedProperty elementUpdater;
 
         SerializedProperty alwaysUpdateInPlayMode;
+        SerializedProperty alwaysUpdateBounds;
 
         //style
         static GUIStyle toggleStyle = null;
@@ -63,7 +64,25 @@ namespace TinyGiantStudio.Layout
 #endif
 
             justiceHorizontalTexture = EditorGUIUtility.Load("Assets/Plugins/Tiny Giant Studio/Modular 3D Layouts/Utility/Editor Icons/Justice Horizontal.png") as Texture;
+
+            if (myTarget.gameObject.GetComponentInParent<Canvas>())
+            {
+                if (!myTarget.gameObject.GetComponent<RectTransform>())
+                {
+                    myTarget.gameObject.AddComponent<RectTransform>();
+                }
+            }
+            else
+            {
+                if (myTarget.gameObject.GetComponent<RectTransform>())
+                {
+                   MText_Editor_Methods.RemoveRectTransform(myTarget.gameObject);
+                }
+            }
+
         }
+
+
 
         public override void OnInspectorGUI()
         {
@@ -82,7 +101,9 @@ namespace TinyGiantStudio.Layout
             if (ModuleDrawer.ElementUpdatersExist())
                 ModuleDrawer.ElementUpdaterContainerList("Element Updater", "", myTarget.elementUpdater, elementUpdater, soTarget);
             EditorGUILayout.Space(5);
+
             MText_Editor_Methods.ItalicHorizontalField(alwaysUpdateInPlayMode, "Always update in playmode", "For performance, it's better to leave it to false and call UpdateLayout() after making changes.\nTurn this on if you are in a hurry or testing stuff.", FieldSize.gigantic);
+            MText_Editor_Methods.ItalicHorizontalField(alwaysUpdateBounds, "Always update bounds", "For performance, it's better to leave it to false and call GetAllChildBounds() when a bound(size of an element) changes", FieldSize.gigantic);
 
             EditorGUILayout.Space(15);
             DrawDebug();
@@ -109,7 +130,7 @@ namespace TinyGiantStudio.Layout
                     }
 #endif
                 }
-                EditorUtility.SetDirty(myTarget);
+                //EditorUtility.SetDirty(myTarget);
             }
         }
 
@@ -131,9 +152,10 @@ namespace TinyGiantStudio.Layout
             MText_Editor_Methods.HorizontalField(verticalOverflow, "Vertical Overflow", "", FieldSize.large);
         }
 
-        private void DrawAlignment()
+        void DrawAlignment()
         {
             Color originalColor = GUI.color;
+
 
             GUILayout.BeginHorizontal();
 
@@ -372,6 +394,9 @@ namespace TinyGiantStudio.Layout
 
         private void DrawSize()
         {
+            if (myTarget.GetComponent<RectTransform>())
+                return;
+
             float labelWidth = EditorGUIUtility.labelWidth;
 
             GUILayout.BeginHorizontal();
@@ -425,6 +450,7 @@ namespace TinyGiantStudio.Layout
             elementUpdater = soTarget.FindProperty("elementUpdater");
 
             alwaysUpdateInPlayMode = soTarget.FindProperty("alwaysUpdateInPlayMode");
+            alwaysUpdateBounds = soTarget.FindProperty("alwaysUpdateBounds");
 
 
             showDebug = new AnimBool(false);

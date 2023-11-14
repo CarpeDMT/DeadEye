@@ -25,6 +25,9 @@ namespace TinyGiantStudio.Layout
                     UpdateLayout();
             }
         }
+
+
+
         [Tooltip("Elements will be split to fill the entire width")]
         [SerializeField]
         private bool _justiceHorizontal = false;
@@ -104,6 +107,9 @@ namespace TinyGiantStudio.Layout
 
         [SerializeField]
         private float _width = 23;
+        /// <summary>
+        /// If this is attached to a rect transform, this gets the recttransform width
+        /// </summary>
         public float Width
         {
             get { return _width; }
@@ -189,55 +195,55 @@ namespace TinyGiantStudio.Layout
             if (transform.childCount == 0)
                 return;
 
-            bounds = GetAllChildBounds();
+            if (GetComponent<RectTransform>() != null)
+                _width = GetComponent<RectTransform>().rect.width;
+
+            if (!Application.isPlaying || alwaysUpdateBounds || TotalActiveChildCount() != bounds.Length)
+                bounds = GetAllChildBounds();
             lines = GetLines();
 
             GetLayoutInformations(out float ySpace, out int maxLine, out float y, out float z);
 
-            int characterNumber = 0;
-
-            for (int lineIndex = 0; lineIndex < lines.Count; lineIndex++)//for each line
+            for (int lineCount = 0; lineCount < lines.Count; lineCount++)//for each line
             {
-                ProcessLine(ref ySpace, ref y, lineIndex, out float justiceXMultiplier, out float x);
+                ProcessLine(ref ySpace, ref y, lineCount, out float justiceXMultiplier, out float x);
 
                 y -= (Spacing.y + ySpace) / 2;
-                for (int i = 0; i < lines[lineIndex].gameObjects.Count; i++) //for each char on the line
+                for (int i = 0; i < lines[lineCount].gameObjects.Count; i++) //for each char on the line
                 {
-                    if (lineIndex >= maxLine)
+                    if (lineCount >= maxLine)
                     {
-                        lines[lineIndex].gameObjects[i].SetActive(false);
+                        lines[lineCount].gameObjects[i].SetActive(false);
                         continue;
                     }
 
-                    Bounds bound = GetBound(lines[lineIndex].gameObjects[i].transform);
+                    Bounds bound = GetBound(lines[lineCount].gameObjects[i].transform);
 
                     float spaceX = ((Spacing.x + bound.size.x) / 2) * justiceXMultiplier;
-
                     x += spaceX;
+
                     Vector3 targetPos = new Vector3(x - bound.center.x, y, z);
+
+                    if (i >= startRepositioningFrom)
+                        SetLocalPosition(lineCount, i, targetPos);
+
                     x += spaceX;
-
-                    if (startRepositioningFrom <= characterNumber)
-                        SetLocalPosition(lineIndex, i, targetPos);
-
-                    characterNumber++;
                 }
 
                 y -= (Spacing.y + ySpace) / 2;
             }
         }
 
-        void SetLocalPosition(int lineCount, int i, Vector3 targetPos)
+        private void SetLocalPosition(int lineCount, int i, Vector3 targetPos)
         {
             if (elementUpdater != null)
             {
-                if (elementUpdater.module)
+                if (elementUpdater.module != null)
                 {
                     elementUpdater.module.UpdateLocalPosition(lines[lineCount].gameObjects[i].transform, elementUpdater.variableHolders, targetPos);
                     return;
                 }
             }
-
 
             if (targetPos != lines[lineCount].gameObjects[i].transform.localPosition) //This is to avoid unnecessary marking things as changed in scene hierarchy
                 lines[lineCount].gameObjects[i].transform.localPosition = targetPos;
@@ -252,6 +258,9 @@ namespace TinyGiantStudio.Layout
         {
             if (meshLayouts.Count == 0)
                 return null;
+
+            if (GetComponent<RectTransform>() != null)
+                _width = GetComponent<RectTransform>().rect.width;
 
             Bounds[] bounds = GetAllChildBounds(meshLayouts);
             lines = GetLines(bounds, meshLayouts);
@@ -388,7 +397,7 @@ namespace TinyGiantStudio.Layout
         /// </summary>
         /// <param name="bounds"></param>
         /// <returns></returns>
-        public List<Line> GetLines(Bounds[] bounds, List<MeshLayout> meshLayouts)
+        List<Line> GetLines(Bounds[] bounds, List<MeshLayout> meshLayouts)
         {
             List<Line> lines = new List<Line>();
 
@@ -480,7 +489,7 @@ namespace TinyGiantStudio.Layout
         /// </summary>
         /// <param name="bounds"></param>
         /// <returns></returns>
-        public List<Line> GetLines()
+        List<Line> GetLines()
         {
             List<Line> lines = new List<Line>();
 
@@ -1165,6 +1174,8 @@ namespace TinyGiantStudio.Layout
         /// </summary>
         void OnDrawGizmos()
         {
+            if (GetComponent<RectTransform>()) return;
+
             Gizmos.matrix = transform.localToWorldMatrix;
             Gizmos.color = new Color(1, 1, 1, 0.75f);
 

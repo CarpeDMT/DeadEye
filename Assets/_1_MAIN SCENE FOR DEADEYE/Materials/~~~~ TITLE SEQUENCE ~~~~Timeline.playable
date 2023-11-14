@@ -583,7 +583,7 @@ MonoBehaviour:
   m_Children: []
   m_Clips:
   - m_Version: 1
-    m_Start: 4.816666666666666
+    m_Start: 2.65
     m_ClipIn: 0
     m_Asset: {fileID: -2222453084962732362}
     m_Duration: 1.466666666666665
@@ -1463,7 +1463,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 3.1833334
+        time: 2.55
         value: -4.8461914
         inSlope: -0.72166824
         outSlope: -1.1316972
@@ -1559,7 +1559,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 3.1833334
+        time: 2.55
         value: -4.8461914
         inSlope: -0.72166824
         outSlope: -1.1316972

@@ -14,11 +14,12 @@ namespace TinyGiantStudio.Modules
 
         public static bool ElementUpdatersExist()
         {
-            string[] guids = AssetDatabase.FindAssets("t:LayoutElementModule", null);
-            if (guids.Length > 0)
-                return true;
+            return true;
+            //string[] guids = AssetDatabase.FindAssets("t:LayoutElementModule", null);
+            //if (guids.Length > 0)
+            //    return true;
 
-            return false;
+            //return false;
         }
 
         public static void UpdateStyles()

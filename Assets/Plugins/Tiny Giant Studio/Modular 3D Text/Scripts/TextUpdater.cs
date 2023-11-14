@@ -1,43 +1,45 @@
 ﻿using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
+#if UNITY_EDITOR
+
+using UnityEditor;
+
+#endif
 
 namespace TinyGiantStudio.Text
 {
+
+    /// <summary>
+    /// List of problems this is trying to solve
+    ///     1. Sometimes, unity destroys the mesh of the text when destroying the other gameobject with the same mesh. (Shared mesh)
+    ///         This checks if a mesh is empty, then updates it to fix empty texts
+    ///     2. On prefab updates, the instance of the mesh in scene doesn't get updated automatically.
+    /// </summary>
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [HelpURL("https://ferdowsur.gitbook.io/modular-3d-text/text/text-updater")]
     public class TextUpdater : MonoBehaviour
     {
+        private Modular3DText Text => GetComponent<Modular3DText>();
+
+
 #if UNITY_EDITOR
-        [HideInInspector]
-        [SerializeField]
-        private int openTime = 0;
+
+        [Tooltip("This will help with text always being correct due to domain reloads and prefabs being updated.")]
+        [SerializeField] private bool alwaysUpdateInEditor = false;
+
+        [SerializeField, HideInInspector] private int GUIID;
 #endif
 
-        Modular3DText Text => GetComponent<Modular3DText>();
-
-
-
-
+        /// <summary>
+        /// Awake has been switched to on enable, because, domain reloads cleared the 
+        /// </summary>
         [ExecuteAlways]
-        private void Awake()
+        private void OnEnable()
         {
 #if UNITY_EDITOR
-            if (!Application.isPlaying)
-                this.enabled = true;
-
-            if (openTime < 5)
-            {
-                openTime++;
-                if (openTime < 2)
-                    return;
-            }
-            PrefabUtility.prefabInstanceUpdated += OnPrefabInstanceUpdated;
+            OnEnableEditorOnly();
 #endif
-
             if (!Text)
                 return;
 
@@ -45,10 +47,78 @@ namespace TinyGiantStudio.Text
                 Text.UpdateText();
         }
 
-
-
 #if UNITY_EDITOR
-        void OnPrefabInstanceUpdated(GameObject instance)
+
+        private void OnEnableEditorOnly()
+        {
+            if (!Application.isPlaying)
+                this.enabled = true;
+
+            // If a text with combined mesh is duplicated, they have the same mesh. If one of those
+            // is deleted, like when updating the text on one of them, both are destroyed, that is,
+            // the shared mesh is destroyed This is used to make a new copy
+
+            #region Duplication Shared mesh Fix
+
+            if (GUIID == 0)
+            {
+                GUIID = gameObject.GetInstanceID();
+            }
+            else if (GUIID != gameObject.GetInstanceID())
+            {
+                GameObject old = EditorUtility.InstanceIDToObject(GUIID) as GameObject;
+                if (old != null)
+                {
+                    MeshFilter original = old.GetComponent<MeshFilter>();
+                    MeshFilter myMeshFilter = GetComponent<MeshFilter>();
+
+                    if (myMeshFilter != null && original != null && myMeshFilter != original)
+                    {
+                        if (myMeshFilter.sharedMesh == original.sharedMesh)
+                        {
+                            myMeshFilter.sharedMesh = new Mesh()
+                            {
+                                vertices = myMeshFilter.sharedMesh.vertices,
+                                triangles = myMeshFilter.sharedMesh.triangles,
+                                normals = myMeshFilter.sharedMesh.normals,
+                                tangents = myMeshFilter.sharedMesh.tangents,
+                                bounds = myMeshFilter.sharedMesh.bounds,
+                                uv = myMeshFilter.sharedMesh.uv
+                            };
+                        }
+                    }
+                }
+
+                GUIID = gameObject.GetInstanceID();
+            }
+
+            #endregion Duplication Shared mesh Fix
+
+            if (PrefabUtility.IsPartOfAnyPrefab(gameObject))
+                PrefabUtility.prefabInstanceUpdated += OnPrefabInstanceUpdated; /// The problem with this is, this works until This gets lost during domain reloads
+        }
+
+        private void Update()
+        {
+            if (Application.isPlaying)
+            {
+                this.enabled = false;
+                return;
+            }
+
+            if (alwaysUpdateInEditor)
+            {
+                //if (Text.combineMeshInEditor)
+                Text.UpdateText();
+            }
+        }
+
+        private void OnDestroy()
+        {
+            EditorApplication.delayCall -= () => CheckPrefab();
+        }
+
+        private void OnPrefabInstanceUpdated(GameObject instance)
         {
             EditorApplication.delayCall += () => CheckPrefab();
         }
@@ -61,38 +131,14 @@ namespace TinyGiantStudio.Text
             if (Text == null)
                 return;
 
-            if (!Text.Font)
-                return;
-
             bool prefabConnected = PrefabUtility.GetPrefabInstanceStatus(this.gameObject) == PrefabInstanceStatus.Connected;
             if (prefabConnected)
             {
-                EditorApplication.delayCall += () => UpdateText();
+                EditorApplication.delayCall += () => Text.CleanUpdateText();
             }
         }
 
-        private void UpdateText()
-        {
-            if (!this)
-                return;
-
-            if (Text == null)
-                return;
-
-            if (Text)
-            {
-                if (!Text.updatedAfterStyleUpdateOnPrefabInstances)
-                {
-                    if (Text.debugLogs)
-                        Debug.Log("Text updated due to prefab update.");
-                    Text.CleanUpdateText();
-                    Text.updatedAfterStyleUpdateOnPrefabInstances = true;//buggy
-                }
-            }
-        }
 #endif
-
-
 
         private bool EmptyText(Modular3DText text)
         {
@@ -119,7 +165,6 @@ namespace TinyGiantStudio.Text
                     }
                 }
             }
-
 
             return true;
         }

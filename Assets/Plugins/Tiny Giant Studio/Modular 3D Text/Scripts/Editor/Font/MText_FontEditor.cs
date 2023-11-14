@@ -10,6 +10,7 @@ namespace TinyGiantStudio.Text
 {
     /// <summary>
     /// TODO: Loop through all characters and check if any is empty
+    /// TODO: Rename the filename
     /// </summary>
 
     [CustomEditor(typeof(Font))]
@@ -68,6 +69,19 @@ namespace TinyGiantStudio.Text
 
         readonly int kerningCountInAPage = 20;
         int kerningCurrentPage;
+
+
+        FontInstanceUpdater _myFontInstanceUpdater;
+        FontInstanceUpdater MyFontInstanceUpdater
+        {
+            get 
+            { 
+                if (_myFontInstanceUpdater == null)
+                    _myFontInstanceUpdater = new FontInstanceUpdater();
+                return _myFontInstanceUpdater; 
+            }
+        }
+
 
         void OnEnable()
         {
@@ -146,6 +160,11 @@ namespace TinyGiantStudio.Text
             GUILayout.Space(5);
             FallBackFont();
 
+            GUILayout.Space(5);
+            if(GUILayout.Button("Recreate all texts with this font in the scene", GUILayout.Height(25)))
+            {
+                MyFontInstanceUpdater.ApplyFontChangesToTheScene(target as Font);
+            }
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -906,65 +925,10 @@ namespace TinyGiantStudio.Text
         //Called after fields are changed in inspector
         void ApplyFontChanges()
         {
-            List<GameObject> allObjectInScene = GetAllObjectsOnlyInScene();
-            List<Modular3DText> texts = new List<Modular3DText>();
-            for (int i = 0; i < allObjectInScene.Count; i++)
-            {
-                if (allObjectInScene[i].GetComponent<Modular3DText>())
-                    texts.Add(allObjectInScene[i].GetComponent<Modular3DText>());
-            }
-
-            for (int i = 0; i < texts.Count; i++)
-            {
-                if (texts[i].Font == target)
-                {
-                    texts[i].CleanUpdateText();
-                }
-            }
+            MyFontInstanceUpdater.ApplyFontChangesToTheScene(target as Font);
         }
 
-        List<GameObject> GetAllObjectsOnlyInScene()
-        {
-            List<GameObject> objectsInScene = new List<GameObject>();
-
-            foreach (GameObject go in Resources.FindObjectsOfTypeAll(typeof(GameObject)) as GameObject[])
-            {
-                if (!EditorUtility.IsPersistent(go.transform.root.gameObject) && !(go.hideFlags == HideFlags.NotEditable || go.hideFlags == HideFlags.HideAndDontSave))
-                    objectsInScene.Add(go);
-            }
-
-            return objectsInScene;
-        }
-        //Texture2D FlipTexture(Texture2D original, bool upSideDown = true)
-        //{
-
-        //    Texture2D flipped = new Texture2D(original.width, original.height);
-
-        //    //int xN = original.width;
-        //    //int yN = original.height;
-
-
-        //    //for (int i = 0; i < xN; i++)
-        //    //{
-        //    //    for (int j = 0; j < yN; j++)
-        //    //    {
-        //    //        if (upSideDown)
-        //    //        {
-        //    //            flipped.SetPixel(j, xN - i - 1, original.GetPixel(j, i));
-        //    //        }
-        //    //        else
-        //    //        {
-        //    //            flipped.SetPixel(xN - i - 1, j, original.GetPixel(i, j));
-        //    //        }
-        //    //    }
-        //    //}
-        //    //flipped.Apply();
-
-        //    return flipped;
-        //}
-
-
-
+       
         void GenerateStyle()
         {
             if (EditorGUIUtility.isProSkin)

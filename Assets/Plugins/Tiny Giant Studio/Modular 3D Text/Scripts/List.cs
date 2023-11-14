@@ -323,6 +323,8 @@ namespace TinyGiantStudio.Text
         [FormerlySerializedAs("ignoreChildOnClickModuleContainers")]
         public bool ignoreChildPressCompleteModuleContainers = false;
 
+        [Tooltip("If you are using the new input system, this calls the SwitchCurrentControlScheme() method in Player input, when Focus() is called.")]
+        [SerializeField] bool switchCurrentControlSchemeInPlayerInputWhenFocused = true;
 
         float returnToSelectedTime = 0; //used by Pressed Style
         bool pressed = false;
@@ -530,7 +532,12 @@ namespace TinyGiantStudio.Text
             this.enabled = true;
 #if ENABLE_INPUT_SYSTEM
             if (GetComponent<PlayerInput>())
+            {
                 GetComponent<PlayerInput>().enabled = true;
+
+                if (switchCurrentControlSchemeInPlayerInputWhenFocused)
+                    GetComponent<PlayerInput>().SwitchCurrentControlScheme();
+            }
 #elif ENABLE_LEGACY_INPUT_MANAGER
             if (GetComponent<ButtonInputProcessor>())
                 GetComponent<ButtonInputProcessor>().enabled = true;

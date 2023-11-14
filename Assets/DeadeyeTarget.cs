@@ -45,7 +45,17 @@ public class DeadeyeTarget : MonoBehaviour
       
             // Instantiate the prefab at the collision point
          
-           
+           if (this.gameObject.CompareTag("WHITE"))
+           {
+             DynamicTextData data = GetComponent<Enemy>().textData;
+                daddy.DealDamage(10);
+                
+                rightColorEvent.Invoke();
+                multiplierManager.RegisterHit(true);
+            rightScore = (multiplierManager.multiplier) * (30);
+            //scoreManager.score(rightScore);
+            DynamicTextManager.CreateText(collisionPoint, rightScore.ToString(), data);
+           }
         
         
         // Check if the collision is with a projectile
@@ -72,7 +82,11 @@ public class DeadeyeTarget : MonoBehaviour
                 
                 DynamicTextManager.CreateText(collisionPoint, wrongScore.ToString(), data);
 
+                
+
         }
+
+        
 
                    
     }

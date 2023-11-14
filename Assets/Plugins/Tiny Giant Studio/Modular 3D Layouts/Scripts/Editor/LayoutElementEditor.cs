@@ -1,6 +1,8 @@
-using TinyGiantStudio.EditorHelpers;
-using UnityEditor;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
+using TinyGiantStudio.EditorHelpers;
 
 
 namespace TinyGiantStudio.Layout
@@ -38,13 +40,13 @@ namespace TinyGiantStudio.Layout
             GenerateStyle();
             EditorGUI.BeginChangeCheck();
 
-            if (myTarget.ignoreElement || myTarget.lineBreak || myTarget.space)
+            if(myTarget.ignoreElement || myTarget.lineBreak || myTarget.space)
                 GUI.enabled = false;
 
             MText_Editor_Methods.ItalicHorizontalField(autoCalculateSize, "Auto Calculate Size", "", FieldSize.large);
             GUILayout.Space(10);
 
-            if (myTarget.autoCalculateSize)
+            if (myTarget.autoCalculateSize )
                 GUI.enabled = false;
 
             GUILayout.BeginHorizontal();

@@ -13,8 +13,31 @@ namespace TinyGiantStudio.Layout
         #region Variable Declaration
         public float spacing = 0;
         public Alignment alignment = Alignment.HorizontalMiddle;
+        public Alignment secondaryAlignment = Alignment.VerticleMiddle;
 
-        private bool startLoopFromEnd = true;
+        bool startLoopFromEnd = true;
+
+        public bool randomizeRotations = false;
+
+        [SerializeField] Vector3 _minimumRandomRotation = Vector3.zero;
+        public Vector3 MinimumRandomRotation
+        {
+            get { return _minimumRandomRotation; }
+            set
+            {
+                if (_minimumRandomRotation != value)
+                {
+                    rotationChanged = true;
+                }
+
+                _minimumRandomRotation = value;
+            }
+        }
+
+        public Vector3 maximumRandomRotation = Vector3.zero;
+        public bool rotationChanged = false;
+
+
 
         public enum Alignment
         {
@@ -34,11 +57,13 @@ namespace TinyGiantStudio.Layout
             if (TotalActiveChildCount() == 0)
                 return;
 
-            bounds = GetAllChildBounds();
+            if (!Application.isPlaying || alwaysUpdateBounds || TotalActiveChildCount() != bounds.Length)
+                bounds = GetAllChildBounds();
+
             float x = 0;
             float y = 0;
 
-            GetPositionValuesAccordingToSelectedAlignment(ref x, ref y, bounds);
+            GetPositionValuesAccordingToSelectedLayout(ref x, ref y, bounds);
 
             GetLoopStart();
 
@@ -62,6 +87,7 @@ namespace TinyGiantStudio.Layout
                     SetChildPosition(ref x, ref y, i, bounds[i], startRepositioningFrom);
                 }
             }
+            rotationChanged = false;
         }
 
         public override List<MeshLayout> GetPositions(List<MeshLayout> meshLayouts)
@@ -74,7 +100,7 @@ namespace TinyGiantStudio.Layout
             float x = 0;
             float y = 0;
 
-            GetPositionValuesAccordingToSelectedAlignment(ref x, ref y, bounds);
+            GetPositionValuesAccordingToSelectedLayout(ref x, ref y, bounds);
 
             GetLoopStart();
 
@@ -92,6 +118,7 @@ namespace TinyGiantStudio.Layout
                     meshLayouts[i] = SetMeshPosition(ref x, ref y, bounds[i], meshLayouts[i]);
                 }
             }
+            rotationChanged = false;
 
             return meshLayouts;
         }
@@ -176,10 +203,29 @@ namespace TinyGiantStudio.Layout
 
                 x -= bound.center.x;
             }
+
             x += toAddX;
             y += toAddY;
 
+
+            if (alignment == Alignment.Left || alignment == Alignment.HorizontalMiddle || alignment == Alignment.Right)
+            {
+                if (secondaryAlignment == Alignment.Top)
+                    y -= bound.size.y / 2;
+                else if (secondaryAlignment == Alignment.Bottom)
+                    y += bound.size.y / 2;
+            }
+
             Vector3 targetPosition = RemoveNaNErrorIfAny(new Vector3(x, y, 0));
+
+
+            if (alignment == Alignment.Left || alignment == Alignment.HorizontalMiddle || alignment == Alignment.Right)
+            {
+                if (secondaryAlignment == Alignment.Top)
+                    y += bound.size.y / 2;
+                else if (secondaryAlignment == Alignment.Bottom)
+                    y -= bound.size.y / 2;
+            }
 
             if (i >= startRepositioningFrom)
                 SetLocalPosition(transform.GetChild(i), targetPosition);
@@ -192,27 +238,58 @@ namespace TinyGiantStudio.Layout
             {
                 x += bound.center.x;
             }
+
             x += toAddX;
             y += toAddY;
+
         }
 
         void SetLocalPosition(Transform target, Vector3 targetPosition)
         {
-            if (elementUpdater.module)
+            if (Application.isPlaying && elementUpdater.module)
             {
-                elementUpdater.module.UpdateLocalPosition(target, elementUpdater.variableHolders, targetPosition);
+                if (!randomizeRotations)
+                    elementUpdater.module.UpdateLocalPosition(target, elementUpdater.variableHolders, targetPosition);
+                else
+                    elementUpdater.module.UpdateLocalTransform(target, elementUpdater.variableHolders, targetPosition, GetRandomQuaternionRotation(MinimumRandomRotation, maximumRandomRotation));
             }
             else
             {
                 if (target.localPosition != targetPosition)
+                {
                     target.localPosition = targetPosition;
+
+                    if (randomizeRotations)
+                    {
+                        target.localEulerAngles = GetRandomRotation(MinimumRandomRotation, maximumRandomRotation);
+                    }
+                }
+                else if (rotationChanged && randomizeRotations)
+                {
+                    target.localEulerAngles = GetRandomRotation(MinimumRandomRotation, maximumRandomRotation);
+                }
             }
         }
 
+        Vector3 GetRandomRotation(Vector3 min, Vector3 max)
+        {
+            float x = Random.Range(min.x, max.x);
+            float y = Random.Range(min.y, max.y);
+            float z = Random.Range(min.z, max.z);
+
+            return new Vector3(x == float.NaN ? 0 : x, y == float.NaN ? 0 : y, z == float.NaN ? 0 : z);
+        }
+        Quaternion GetRandomQuaternionRotation(Vector3 min, Vector3 max)
+        {
+            float x = Random.Range(min.x, max.x);
+            float y = Random.Range(min.y, max.y);
+            float z = Random.Range(min.z, max.z);
+
+            return Quaternion.Euler(x == float.NaN ? 0 : x, y == float.NaN ? 0 : y, z == float.NaN ? 0 : z);
+        }
 
 
-
-        void GetPositionValuesAccordingToSelectedAlignment(ref float x, ref float y, Bounds[] bounds)
+        void GetPositionValuesAccordingToSelectedLayout(ref float x, ref float y, Bounds[] bounds)
         {
             if (alignment == Alignment.Bottom)
             {
@@ -244,11 +321,10 @@ namespace TinyGiantStudio.Layout
             {
                 for (int i = 0; i < bounds.Length; i++)
                 {
-                    if (transform.childCount > i)
-                        if (transform.GetChild(i))
-                            if (transform.GetChild(i).GetComponent<LayoutElement>())
-                                if (transform.GetChild(i).GetComponent<LayoutElement>().ignoreElement)
-                                    continue;
+                    if (i < transform.childCount && transform.GetChild(i))
+                        if (transform.GetChild(i).GetComponent<LayoutElement>())
+                            if (transform.GetChild(i).GetComponent<LayoutElement>().ignoreElement)
+                                continue;
 
                     if (bounds[i].size == Vector3.zero)
                         continue;

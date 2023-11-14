@@ -106,7 +106,7 @@ namespace TinyGiantStudio.PackageImporter
                 }
                 else
                 {
-                    GUILayout.Label("No asset found. Please create a TGS_Asset scriptable object", noteStyle);
+                    GUILayout.Label("No asset found. Please create a new asset importer file to be discovered.", noteStyle);
                     GUILayout.Space(15);
                 }
             }

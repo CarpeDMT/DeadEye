@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-
 namespace TinyGiantStudio.Text
 {
     [PreferBinarySerialization]
@@ -12,52 +11,60 @@ namespace TinyGiantStudio.Text
     public class Font : ScriptableObject
     {
         #region Variable declaration
+
         public List<Character> characters = new List<Character>();
 
-        [Tooltip("The 3d object with the characters as child object. \nNOT required.")]
-        public GameObject modelSource = null;
-
+        #region Spacing Settings
 
         [Tooltip("Use UpperCase If LowerCase Is Missing")]
         public bool useUpperCaseLettersIfLowerCaseIsMissing = true;
 
-        [Tooltip("Monospace means all characters are spaced equally.\nIf turned on, individual spacing value from list below is ignored. The information is not removed to avoid accidentally turning it on ruin the font. \nCharacter spacing is used for everything")]
+        [Tooltip("Mono space means all characters are spaced equally.\nIf turned on, individual spacing value from list below is ignored. The information is not removed to avoid accidentally turning it on ruin the font. \nCharacter spacing is used for everything")]
         public bool monoSpaceFont;
+
         public float monoSpaceSpacing = 1;
+
         [Tooltip("Word spacing and spacing for unavailable characters")]
         public float emptySpaceSpacing = 1;
+
+        public float characterSpacing = 1;
+
+        public float TabSpace() => emptySpaceSpacing * 3;
+
+        #endregion Spacing Settings
 
         [Space]
         [Tooltip("Avoid recursive references")]
         public List<Font> fallbackFonts = new List<Font>();
 
+        [Tooltip("The 3d object with the characters as child object. \nNOT required.")]
+        public GameObject modelSource = null;
 
-
+        #region Kerning
 
         public bool enableKerning = true;
         public float kerningMultiplier = 1f;
+
         //unfortunately dictionary isn't serializable //TODO
         public List<KerningPair> kernTable = new List<KerningPair>();
 
-        public float characterSpacing = 1;
-        public float TabSpace() => emptySpaceSpacing * 3;
+        #endregion Kerning
 
-
-
+        #region Font file data
 
         #region Data from original font file
+
         [Tooltip("An em is a unit of measurement, relative to the size of the font; therefore, in a typeface set at a font-size of 16px, one em is 16px.")]
         public float unitPerEM = 1; //multiplied by 8
+
         [Tooltip("Text's character spacing = font's character spacing * text's character spacing")]
         public float lineHeight = 0.1469311f;
 
         #endregion Data from original font file
 
-
-
-        #region Font file data
         [SerializeField] //It's not serializable though
         private TypeFace _typeFace;
+
         public TypeFace TypeFace
         {
             get
@@ -74,22 +81,21 @@ namespace TinyGiantStudio.Text
         }
 
         public byte[] fontBytes;
-        #endregion
 
+        #endregion Font file data
 
+        #region New character creation settings
 
-
-
-        #region new character creation settings
         public int sizeXYInput = 1;
         public int sizeZInput = 1;
         public float vertexDensityInput = 1;
         public float autoSmoothAngleInput = 30;
         public float averageYValue = 0;
-        #endregion new character creation settings
 
+        #endregion New character creation settings
 
 #if UNITY_EDITOR
+
         /// <summary>
         /// Editor only. Used by inspector.
         /// </summary>
@@ -99,20 +105,10 @@ namespace TinyGiantStudio.Text
         /// Editor only. Used by inspector.
         /// </summary>
         public string beingSearched;
+
 #endif
 
-
         #endregion Variable declaration
-
-
-
-
-
-
-
-
-
-
 
         /// <summary>
         /// When this returns null, CharacterGenerator script is used to create it on the fly from ttf data
@@ -166,7 +162,7 @@ namespace TinyGiantStudio.Text
             return (null, null);
         }
 
-        Mesh MeshPrefab(int i)
+        private Mesh MeshPrefab(int i)
         {
             if (characters[i].prefab)
             {
@@ -182,7 +178,6 @@ namespace TinyGiantStudio.Text
             {
                 return characters[i].meshPrefab;
             }
-
 
             return null;
         }
@@ -248,15 +243,14 @@ namespace TinyGiantStudio.Text
                 return MonoSpaceSpacing();
             }
         }
+
         /// <summary>
         /// This is the raw value used by unity after taking font EM into consideration
         /// </summary>
         /// <returns></returns>
         public float MonoSpaceSpacing() => ConvertedValue(monoSpaceSpacing);
 
-
-
-        float Kerning(char previousChar, Character currentChar)
+        private float Kerning(char previousChar, Character currentChar)
         {
             for (int i = 0; i < kernTable.Count; i++)
             {
@@ -295,7 +289,9 @@ namespace TinyGiantStudio.Text
         }
 
         //Font creation:
+
         #region Update Character List start
+
         public void UpdateCharacterList(GameObject prefab)
         {
             modelSource = prefab;
@@ -346,7 +342,7 @@ namespace TinyGiantStudio.Text
             characters.Add(newChar);
         }
 
-        bool CharacterAlreadyExists(char character)
+        private bool CharacterAlreadyExists(char character)
         {
             for (int i = 0; i < characters.Count; i++)
                 if (characters[i].character == character)
@@ -367,14 +363,12 @@ namespace TinyGiantStudio.Text
             newChar.character = character;
             newChar.spacing = spacing;
 
-
             newChar.meshPrefab = mesh;
 
             characters.Add(newChar);
         }
 
-
-        void ProcessName(string name, out char character, out float spacing)
+        private void ProcessName(string name, out char character, out float spacing)
         {
             try
             {
@@ -386,7 +380,8 @@ namespace TinyGiantStudio.Text
                 OldMethod(name, out character, out spacing);
             }
         }
-        void NewMethod(string name, out char character, out float spacing)
+
+        private void NewMethod(string name, out char character, out float spacing)
         {
             string[] s = name.Split(new char[] { '_', ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -402,13 +397,12 @@ namespace TinyGiantStudio.Text
         /// <param name="name"></param>
         /// <param name="character"></param>
         /// <param name="spacing"></param>
-        void OldMethod(string name, out char character, out float spacing)
+        private void OldMethod(string name, out char character, out float spacing)
         {
             if (name.Contains("dot"))
             {
                 character = '.';
                 spacing = (float)Convert.ToDouble(name.Substring(4));
-
             }
             else if (name.Contains("forwardSlash"))
             {
@@ -468,7 +462,8 @@ namespace TinyGiantStudio.Text
             }
             spacing *= 0.81f;
         }
-        float GetSpacing(string numberString)
+
+        private float GetSpacing(string numberString)
         {
             if (float.TryParse(numberString, NumberStyles.Any, CultureInfo.InvariantCulture, out var value))
                 return value;
@@ -487,12 +482,12 @@ namespace TinyGiantStudio.Text
             if (float.IsNaN(monoSpaceSpacing))
                 monoSpaceSpacing = 300;
         }
-        #endregion Update Character List end
 
+        #endregion Update Character List start
 
-        public void SetFontBytes(byte[] rfontBytes)
+        public void SetFontBytes(byte[] newFontBytes)
         {
-            fontBytes = rfontBytes;
+            fontBytes = newFontBytes;
             GetTypeFaceFromBytes();
         }
 
