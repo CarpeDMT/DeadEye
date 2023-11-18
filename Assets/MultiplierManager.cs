@@ -15,7 +15,8 @@ public class MultiplierManager : MonoBehaviour
     private int consecutiveHits = 0;
     public int multiplier = 1;
     public uint points; 
-
+    public UnityEvent ReduceMultiplier;
+    public UnityEvent IncreaseMultiplier;
     private void Start()
     {
         scoreText = GameObject.FindWithTag("SCORE").GetComponent<Text>();
@@ -35,6 +36,7 @@ public class MultiplierManager : MonoBehaviour
                 consecutiveHits = 0;
                 OnMultiplierActivated?.Invoke(multiplier);
                 UpdateMultiplierText();
+                IncreaseMultiplier.Invoke();
             }
             score += (uint)(multiplier * 10);
             OnSuccessfulHit?.Invoke(true);
@@ -43,19 +45,27 @@ public class MultiplierManager : MonoBehaviour
         {
             consecutiveHits = 0;
             OnSuccessfulHit?.Invoke(false);
+            ReduceMultiplier.Invoke();
+            multiplier = 1;
+            UpdateMultiplierText();
             
         }
 
         UpdateScoreText();
     }
 
-    private void UpdateScoreText()
+    public void UpdateScoreText()
     {
         scoreText.text = score.ToString();
     }
 
-    private void UpdateMultiplierText()
+    public void UpdateMultiplierText()
     {
         multiplierText.text = multiplier > 1 ? multiplier + "X Multiplier" : "";
+    }
+
+    public void ReduceMultiplierMethod()
+    {
+        
     }
 }

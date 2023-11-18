@@ -9,9 +9,9 @@ using TRavljen.UnitFormation.Demo;
 
 public class HPManager : MonoBehaviour
 {
-    public int HP;
-    public Text hpText;
-    public int DefaultHP;
+    public float HP;
+   // public Text hpText;
+   // public int DefaultHP;
 
     public UnityEvent GameOver;
     public DeadeyeUnit UnitGuy;
@@ -19,6 +19,14 @@ public class HPManager : MonoBehaviour
     public GameObject[] Lasers;
     public GameObject KillSpawner;
     public GameObject[] Drones;
+    public GameObject BatteryFull;
+    public GameObject BatteryTopThird;
+    public GameObject BatteryHalf; 
+    public GameObject BatteryLow;
+    public GameObject BatteryGone;
+    public GameObject SKULL;
+    public GameObject NULL;
+  
     public bool ifArcade;
    /*  public bool Waiting;
     public float WaitingTime;
@@ -26,10 +34,10 @@ public class HPManager : MonoBehaviour
      */
     private void Awake()
     {   
-        hpText = this.GetComponent<Text>();
+       // hpText = this.GetComponent<Text>();
        // if (ifArcade = false)
        // {
-        HP = DefaultHP;
+        HP = 5f;
       //  }
       //  else {
     //        HP = 10000;
@@ -41,25 +49,104 @@ public class HPManager : MonoBehaviour
 
     public void HPUpdate()
     {
-    
-        hpText.text = ("");
 
-        if (HP<=0)
-        { 
+      if (ifArcade)
+      {
+        BatteryFull.SetActive(false);
+          BatteryTopThird.SetActive(false);
+          BatteryHalf.SetActive(false);
+          BatteryLow.SetActive(false);
+          BatteryGone.SetActive(false);
+          SKULL.SetActive(false);
+          NULL.SetActive(true);
+
+      }
+
+       // hpText.text = ("");
+        else if (HP >= 5)
+        {
+          BatteryFull.SetActive(true);
+          BatteryTopThird.SetActive(false);
+          BatteryHalf.SetActive(false);
+          BatteryLow.SetActive(false);
+          BatteryGone.SetActive(false);
+          SKULL.SetActive(false);
+          NULL.SetActive(false);
+
+        }
+       else if (HP == 4)
+        {
+          BatteryFull.SetActive(false);
+          BatteryTopThird.SetActive(true);
+          BatteryHalf.SetActive(false);
+          BatteryLow.SetActive(false);
+          BatteryGone.SetActive(false);
+           SKULL.SetActive(false);
+          NULL.SetActive(false);
+
+        }
+        else if (HP == 3)
+        {
+          BatteryFull.SetActive(false);
+          BatteryTopThird.SetActive(false);
+          BatteryHalf.SetActive(true);
+          BatteryLow.SetActive(false);
+          BatteryGone.SetActive(false);
+           SKULL.SetActive(false);
+          NULL.SetActive(false);
+
+        }
+        else if (HP == 2)
+        {
+          BatteryFull.SetActive(false);
+          BatteryTopThird.SetActive(false);
+          BatteryHalf.SetActive(false);
+          BatteryLow.SetActive(true);
+          BatteryGone.SetActive(false);
+           SKULL.SetActive(false);
+          NULL.SetActive(false);
+
+        }
+
+         else if (HP == 1)
+        {
+          BatteryFull.SetActive(false);
+          BatteryTopThird.SetActive(false);
+          BatteryHalf.SetActive(false);
+          BatteryLow.SetActive(false);
+          BatteryGone.SetActive(true);
+           SKULL.SetActive(false);
+          NULL.SetActive(false);
+
+        }
+
+        else if (HP<=0)
+        {  BatteryFull.SetActive(false);
+          BatteryTopThird.SetActive(false);
+          BatteryHalf.SetActive(false);
+          BatteryLow.SetActive(false);
+          BatteryGone.SetActive(false); 
+          SKULL.SetActive(true);
+          NULL.SetActive(false);
+
             GameOver.Invoke();
+            GameOverGuy();
         }
     }
 
     public void Hit() {
  /*    if (!Waiting){ */
        /* Waiting = true; */
+      
         Lasers = GameObject.FindGameObjectsWithTag("ActualLaser");
         foreach (GameObject obj in Lasers)
         {
             Destroy(obj);
         }
+        if(!ifArcade){
                 HP--;
         HPUpdate();
+        }
        // time.ResumeTime();
      /*    WaitingTimeActivate(); */
     }
@@ -75,7 +162,8 @@ public class HPManager : MonoBehaviour
             Destroy(unit);
         }
        // if (ifArcade = false){
-        HP = DefaultHP;
+        HP = 0;
+       // GameOver.Invoke();
        // }
       //  else { HP = 10000;}
        // Drones.Clear(); // Clear the list after destroying all units
@@ -86,17 +174,20 @@ public class HPManager : MonoBehaviour
     public void ArcadeMode()
     {
         ifArcade = true;
+        HPUpdate();
     }
 
     public void LivesMode()
     
     {
         ifArcade = false;
+        HPUpdate();
     }
 
     public void GameStartGuy()
     {
-      //  if (ifArcade = false){
+        
+         
         HP = 5;
         
         //else{ HP = 10000;}

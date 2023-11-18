@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace TinyGiantStudio.Text.Example
 {
@@ -14,6 +15,7 @@ namespace TinyGiantStudio.Text.Example
         [SerializeField] int duration = 10;
         [Tooltip("How fast the duration goes down.\nValue of 1 = normal time.")]
         [SerializeField] float timeStep = 1;
+        public UnityEvent CountdownEndings;
 
         void Start()
         {
@@ -21,6 +23,11 @@ namespace TinyGiantStudio.Text.Example
                 StartCoroutine(CountdownRoutine());
         }
 
+        public void StartTimer() 
+        {
+            StartCoroutine(CountdownRoutine());
+        }
+        
         IEnumerator CountdownRoutine()
         {
             if (timeStep == 0)
@@ -32,6 +39,7 @@ namespace TinyGiantStudio.Text.Example
             {
                 yield return new WaitForSeconds(timeStep);
                 modular3DText.UpdateText(i.ToString());
+                
             }
             yield return new WaitForSeconds(1);
             modular3DText.UpdateText(textAfterCountdownEnds);

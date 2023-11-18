@@ -82,7 +82,7 @@ MonoBehaviour:
   HitFXPrefab: {fileID: 1995403933065894, guid: 474e49d51cc9e474dae818e966675c08,
     type: 3}
   Damage: 1
-  AddRigidForce: 0.05
+  AddRigidForce: 0
   ValidLayers:
     serializedVersion: 2
     m_Bits: 1601

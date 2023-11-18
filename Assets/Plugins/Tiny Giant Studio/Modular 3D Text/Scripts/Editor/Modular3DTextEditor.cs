@@ -4,7 +4,7 @@ using TinyGiantStudio.Layout;
 using TinyGiantStudio.Modules;
 using UnityEditor;
 using UnityEditor.AnimatedValues;
-using UnityEditor.Experimental.SceneManagement;
+
 using UnityEngine;
 
 namespace TinyGiantStudio.Text
@@ -872,7 +872,7 @@ namespace TinyGiantStudio.Text
             }
         }
 
-        private bool ShouldShowPrefabSettings() => PrefabUtility.IsPartOfPrefabInstance(myTarget.gameObject) || PrefabStageUtility.GetCurrentPrefabStage() != null;
+        private bool ShouldShowPrefabSettings() => PrefabUtility.IsPartOfPrefabInstance(myTarget.gameObject) || UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage() != null;
         
 
         private void HideLetterInHierarchy()
