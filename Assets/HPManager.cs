@@ -1,3 +1,4 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,42 +29,15 @@ public class HPManager : MonoBehaviour
     public GameObject NULL;
   
     public bool ifArcade;
-   /*  public bool Waiting;
-    public float WaitingTime;
   
-     */
-    private void Awake()
-    {   
-       // hpText = this.GetComponent<Text>();
-       // if (ifArcade = false)
-       // {
-        HP = 5f;
-      //  }
-      //  else {
-    //        HP = 10000;
-      //  }
-        HPUpdate();
-       /*  Waiting = false; */
-    
-    }
-
+  
     public void HPUpdate()
     {
 
-      if (ifArcade)
-      {
-        BatteryFull.SetActive(false);
-          BatteryTopThird.SetActive(false);
-          BatteryHalf.SetActive(false);
-          BatteryLow.SetActive(false);
-          BatteryGone.SetActive(false);
-          SKULL.SetActive(false);
-          NULL.SetActive(true);
-
-      }
+     
 
        // hpText.text = ("");
-        else if (HP >= 5)
+         if (HP >= 5)
         {
           BatteryFull.SetActive(true);
           BatteryTopThird.SetActive(false);
@@ -130,75 +104,63 @@ public class HPManager : MonoBehaviour
           NULL.SetActive(false);
 
             GameOver.Invoke();
-            GameOverGuy();
+            //GameOverGuy();
         }
     }
 
     public void Hit() {
- /*    if (!Waiting){ */
-       /* Waiting = true; */
-      
+
         Lasers = GameObject.FindGameObjectsWithTag("ActualLaser");
         foreach (GameObject obj in Lasers)
         {
             Destroy(obj);
         }
-        if(!ifArcade){
+      
                 HP--;
         HPUpdate();
         }
-       // time.ResumeTime();
-     /*    WaitingTimeActivate(); */
-    }
+ 
 
-    public void GameOverGuy()
-    {   
-         KillSpawner = GameObject.FindWithTag("EnemySpawner");
-        Drones = GameObject.FindGameObjectsWithTag("DRONE");
-        //UnitGuy = GameObject.FindWithTag("UnitFormationController").GetComponent<DeadeyeUnit>();
-        GameObject.Destroy(KillSpawner);
-        foreach (GameObject unit in Drones)
+  public void GameOverGuy()
+{   
+    KillSpawner = GameObject.FindWithTag("EnemySpawner");
+    Drones = GameObject.FindGameObjectsWithTag("DRONE");
+
+    // Check if KillSpawner is a parent of any "DRONE" game objects
+    bool killSpawnerIsParent = false;
+    foreach (GameObject drone in Drones)
+    {
+        if (drone.transform.IsChildOf(KillSpawner.transform))
         {
-            Destroy(unit);
+            killSpawnerIsParent = true;
+            break;
         }
-       // if (ifArcade = false){
-        HP = 0;
-       // GameOver.Invoke();
-       // }
-      //  else { HP = 10000;}
-       // Drones.Clear(); // Clear the list after destroying all units
-
-       // UnitGuy.DestroyAllUnits();
     }
 
-    public void ArcadeMode()
+    // Only destroy KillSpawner if it's not a parent of any "DRONE" game objects
+    if (!killSpawnerIsParent)
     {
-        ifArcade = true;
-        HPUpdate();
+        GameObject.Destroy(KillSpawner);
     }
 
-    public void LivesMode()
-    
+    // Destroy each "DRONE" game object
+    foreach (GameObject unit in Drones)
     {
-        ifArcade = false;
-        HPUpdate();
+      
+        Destroy(unit);
     }
+}
 
+
+  
     public void GameStartGuy()
     {
         
          
         HP = 5;
         
-        //else{ HP = 10000;}
-        HPUpdate();
+              HPUpdate();
     }
 }
 
-   /* public  System.Collections.IEnumerator WaitingTimeActivate()
-    {
-         yield return new WaitForSeconds(WaitingTime);
-         Waiting = false;
-         
-    }     */
-    
+

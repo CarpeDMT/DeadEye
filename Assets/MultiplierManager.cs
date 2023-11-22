@@ -66,6 +66,10 @@ public class MultiplierManager : MonoBehaviour
 
     public void ReduceMultiplierMethod()
     {
-        
+          consecutiveHits = 0;
+            OnSuccessfulHit?.Invoke(false);
+            ReduceMultiplier.Invoke();
+            multiplier = 1;
+            UpdateMultiplierText();
     }
 }

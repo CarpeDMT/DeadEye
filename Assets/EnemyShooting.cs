@@ -13,6 +13,8 @@ public class EnemyShooting : MonoBehaviour
     private bool canShoot = true;
     public DeadEyeColorGuy colorGuy;
 
+    public float velocity = 1.5f;
+
     private void Start()
     {
         mainCamera = Camera.main.transform;
@@ -62,6 +64,6 @@ public class EnemyShooting : MonoBehaviour
         Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
 
         // Set velocity based on the direction to the camera and inaccuracy
-        projectileRb.velocity = directionToCamera * 10f; // Adjust the speed as needed
+        projectileRb.velocity = directionToCamera * velocity; // Adjust the speed as needed
     }
 }

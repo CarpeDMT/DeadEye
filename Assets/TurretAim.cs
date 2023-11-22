@@ -20,7 +20,7 @@ public class TurretAim : MonoBehaviour
       */
         // Calculate the direction to the player
         Vector3 direction = player.position - transform.position;
-        direction.y = 0f; // Optional: Keep the turret rotation on the same plane
+        //direction.y = 0f; // Optional: Keep the turret rotation on the same plane
 
         // Calculate the target rotation based on the direction
         Quaternion targetRotation = Quaternion.LookRotation(direction);

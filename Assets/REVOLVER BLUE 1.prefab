@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4744602252838052878}
   - component: {fileID: 2751215786884342990}
   - component: {fileID: 9069283395230172371}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: rwe (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -531,9 +531,10 @@ GameObject:
   - component: {fileID: 2635930255563877425}
   - component: {fileID: 3538712067962832283}
   - component: {fileID: 8962548980020331030}
-  m_Layer: 0
+  - component: {fileID: 1500376744535888285}
+  m_Layer: 6
   m_Name: SM_Wep_Revolver_01
-  m_TagString: Untagged
+  m_TagString: GUN
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -606,6 +607,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!135 &1500376744535888285
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 650760750295606364}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.3134558
+  m_Center: {x: 0.0000076293945, y: 0.047441173, z: 0.23188645}
 --- !u!1 &720274612435935396
 GameObject:
   m_ObjectHideFlags: 0
@@ -618,7 +640,7 @@ GameObject:
   - component: {fileID: 6272339742774719814}
   - component: {fileID: 1922216287976688595}
   - component: {fileID: 1967588778171403643}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: rwe (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5276,7 +5298,7 @@ GameObject:
   - component: {fileID: 6395873883184004711}
   - component: {fileID: 7808491670895669991}
   - component: {fileID: 9111265900108674047}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: rwe (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6164,9 +6186,10 @@ GameObject:
   - component: {fileID: 8516489389824087446}
   - component: {fileID: 834545011613174584}
   - component: {fileID: 5716577271244628028}
+  - component: {fileID: 8079367447642487954}
   m_Layer: 10
   m_Name: REVOLVER BLUE 1
-  m_TagString: Untagged
+  m_TagString: BLUE SHIELD
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6271,7 +6294,7 @@ MonoBehaviour:
   ParentToHands: 1
   ParentHandModel: 0
   SnapHandModel: 0
-  CanBeDropped: 0
+  CanBeDropped: 1
   CanBeSnappedToSnapZone: 1
   ForceDisableKinematicOnDrop: 0
   InstantMovement: 0
@@ -6537,7 +6560,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HapticsOnValidPickup: 1
   HapticsOnValidRemotePickup: 1
-  HapticsOnCollision: 0
+  HapticsOnCollision: 1
   HapticsOnGrab: 1
   VibrateFrequency: 0.3
   VibrateAmplitude: 0.1
@@ -6724,7 +6747,19 @@ MonoBehaviour:
         m_CallState: 2
   onRelease:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8079367447642487954}
+        m_TargetAssemblyTypeName: DG.Tweening.DOTweenAnimation, Assembly-CSharp-firstpass
+        m_MethodName: DOPlay
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onBecomesClosestGrabbable:
     m_PersistentCalls:
       m_Calls: []
@@ -6780,14 +6815,20 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7768043189660304346}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5e41d884a5e5be4fb1cf2e95faa0482, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  head: {fileID: 0}
-  rightController: 0
-  leftController: 1
+  switchingRate: 1
+  blueNextSwitch: 0
+  redNextSwitch: 0
+  redRayGun: {fileID: 0}
+  redShield: {fileID: 0}
+  blueRayGun: {fileID: 0}
+  blueShield: {fileID: 0}
+  redIsGun: 1
+  blueIsGun: 1
 --- !u!82 &6558280200880812700
 AudioSource:
   m_ObjectHideFlags: 0
@@ -7006,6 +7047,114 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Grabbed: 0
+--- !u!114 &8079367447642487954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7768043189660304346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d0390bd8b8ffd640b34fe25065ff1df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updateType: 0
+  isSpeedBased: 0
+  hasOnStart: 0
+  hasOnPlay: 0
+  hasOnUpdate: 0
+  hasOnStepComplete: 0
+  hasOnComplete: 0
+  hasOnTweenCreated: 0
+  hasOnRewind: 0
+  onStart:
+    m_PersistentCalls:
+      m_Calls: []
+  onPlay:
+    m_PersistentCalls:
+      m_Calls: []
+  onUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+  onStepComplete:
+    m_PersistentCalls:
+      m_Calls: []
+  onComplete:
+    m_PersistentCalls:
+      m_Calls: []
+  onTweenCreated:
+    m_PersistentCalls:
+      m_Calls: []
+  onRewind:
+    m_PersistentCalls:
+      m_Calls: []
+  targetIsSelf: 1
+  targetGO: {fileID: 0}
+  tweenTargetIsTargetGO: 1
+  delay: 0
+  duration: 0.4
+  easeType: 25
+  easeCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  loopType: 0
+  loops: 1
+  id: 
+  isRelative: 0
+  isFrom: 0
+  isIndependentUpdate: 0
+  autoKill: 0
+  autoGenerate: 1
+  isActive: 1
+  isValid: 1
+  target: {fileID: 3776988251997097383}
+  animationType: 14
+  targetType: 11
+  forcedTargetType: 0
+  autoPlay: 0
+  useTargetAsV3: 0
+  endValueFloat: 0
+  endValueV3: {x: 1, y: 1, z: 1}
+  endValueV2: {x: 0, y: 0}
+  endValueColor: {r: 1, g: 1, b: 1, a: 1}
+  endValueString: 
+  endValueRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 0
+    height: 0
+  endValueTransform: {fileID: 0}
+  optionalBool0: 0
+  optionalBool1: 1
+  optionalFloat0: 90
+  optionalInt0: 20
+  optionalRotationMode: 0
+  optionalScrambleMode: 0
+  optionalShakeRandomnessMode: 0
+  optionalString: 
 --- !u!1 &7833495117096984503
 GameObject:
   m_ObjectHideFlags: 0
@@ -7783,8 +7932,20 @@ PrefabInstance:
       value: SHIELD
       objectReference: {fileID: 0}
     - target: {fileID: 1199190242650504, guid: 7933a56209592254db540b14af3c36ce, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1199190242650504, guid: 7933a56209592254db540b14af3c36ce, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1199190242650504, guid: 7933a56209592254db540b14af3c36ce, type: 3}
+      propertyPath: m_TagString
+      value: SHIELD
+      objectReference: {fileID: 0}
+    - target: {fileID: 1768233629893570, guid: 7933a56209592254db540b14af3c36ce, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1768233629893570, guid: 7933a56209592254db540b14af3c36ce, type: 3}
       propertyPath: m_IsActive

@@ -31,6 +31,11 @@ TagManager:
   - UIDraggable
   - LEADERBOARD
   - TIMER
+  - GUN
+  - SHIELD
+  - BLUE SHIELD
+  - RED SHIELD
+  - MULTIPLIER
   layers:
   - Default
   - TransparentFX

@@ -55,12 +55,13 @@ public class ScoreManager : MonoBehaviour
     {
         UpdateScoreText();
         _leaderboard.AddEntry(Score);
+        _leaderboard.Display();
         
     }
 
     public void UpdateScoreText()
     {
-       // scoreText.text =  Score.ToString();
+        scoreText.text =  Score.ToString("D7");
         //PauseScoreText.text = Score.ToString();
       //  if (Score > highScoreNum)
       //  {

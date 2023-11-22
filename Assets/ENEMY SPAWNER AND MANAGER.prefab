@@ -178,7 +178,7 @@ GameObject:
   m_Layer: 0
   m_Name: ENEMY SPAWNER AND MANAGER
   m_TagString: EnemySpawner
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -29802,7 +29802,7 @@ Transform:
   m_GameObject: {fileID: 3281043816277239594}
   serializedVersion: 2
   m_LocalRotation: {x: 0.25881898, y: -0.0000014105548, z: 0.00000037795687, w: 0.96592593}
-  m_LocalPosition: {x: -2.31, y: -2.94, z: -6.82}
+  m_LocalPosition: {x: -2.31, y: -2.24, z: 0}
   m_LocalScale: {x: 3.490256, y: 1.521508, z: 2.643224}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -29898,9 +29898,9 @@ MonoBehaviour:
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_UseGeometry: 0
+  m_UseGeometry: 1
   m_DefaultArea: 0
-  m_GenerateLinks: 0
+  m_GenerateLinks: 1
   m_IgnoreNavMeshAgent: 1
   m_IgnoreNavMeshObstacle: 1
   m_OverrideTileSize: 0
@@ -29908,7 +29908,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.033333335
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 013dd39f56caff44fa4ef7bb50ad03db, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: e05de7b5d0ea07d409d3a1c6f0ff3edc, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1 &3366743019135769053
 GameObject:
@@ -30573,7 +30573,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.0000014901161, z: -0, w: 1}
   m_LocalPosition: {x: -2.65, y: -9.29, z: -4.75}
-  m_LocalScale: {x: 0.06308299, y: 0.063083, z: 0.06308299}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8972829257238871461}
@@ -36391,10 +36391,10 @@ MonoBehaviour:
         spawnRange: {x: 2, y: 2}
       - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
           type: 3}
-        spawnRange: {x: 1, y: 1}
+        spawnRange: {x: 0, y: 1}
       - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
           type: 3}
-        spawnRange: {x: 1, y: 1}
+        spawnRange: {x: 0, y: 1}
       timer: 0
     - mobs:
       - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
@@ -37073,10 +37073,10 @@ MonoBehaviour:
     spawnRange: {x: 2, y: 2}
   - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
       type: 3}
-    spawnRange: {x: 1, y: 1}
+    spawnRange: {x: 0, y: 1}
   - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
       type: 3}
-    spawnRange: {x: 1, y: 1}
+    spawnRange: {x: 0, y: 1}
   CurWaveTab: 0
   editorWaves:
     keys: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a0000000b0000000c0000000d0000000e0000000f000000100000001100000012000000130000001400000015000000160000001700000018000000190000001a0000001b0000001c0000001d0000001e0000001f000000200000002100000022000000230000002400000025000000260000002700000028000000290000002a0000002b0000002c0000002d0000002e0000002f0000003000000031000000
@@ -37084,9 +37084,13 @@ MonoBehaviour:
     - mobs:
       - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
           type: 3}
-        spawnRange: {x: 2, y: 5}
-      - prefab: {fileID: 0}
-        spawnRange: {x: 1, y: 1}
+        spawnRange: {x: 2, y: 2}
+      - prefab: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
+          type: 3}
+        spawnRange: {x: 0, y: 1}
+      - prefab: {fileID: 1368707597506421713, guid: 7d4168ba8d3fe43a2a26235a957ad1e8,
+          type: 3}
+        spawnRange: {x: 0, y: 1}
       timer: 0
     - mobs:
       - prefab: {fileID: 8415072885368438281, guid: 660276bc16117482ab0a67ce6c4e3a81,
@@ -82517,7 +82521,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9185027893046811341}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eed435277dc45244f9dfc5a7cefaa562, type: 3}
   m_Name: 
@@ -84202,7 +84206,7 @@ PrefabInstance:
     - target: {fileID: 1022611265577553595, guid: c12fcb887b5a7456a85d3cc377b67739,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6409861273747493152, guid: c12fcb887b5a7456a85d3cc377b67739,
         type: 3}

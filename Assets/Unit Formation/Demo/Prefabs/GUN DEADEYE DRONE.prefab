@@ -458,7 +458,7 @@ GameObject:
   - component: {fileID: 8534706793614777151}
   m_Layer: 0
   m_Name: Sk_Space_Pod_Mesh
-  m_TagString: RED
+  m_TagString: WHITE
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -712,10 +712,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.9934822
-  m_Height: 3.0499837
+  m_Radius: 0.5317839
+  m_Height: 2.4793906
   m_Direction: 0
-  m_Center: {x: -2.5578196, y: -1.310424, z: 0.49344593}
+  m_Center: {x: -2.2725363, y: -1.2278045, z: 0.12247343}
 --- !u!1 &4208179807154694352
 GameObject:
   m_ObjectHideFlags: 0
@@ -808,8 +808,7 @@ Transform:
   m_LocalPosition: {x: -0.16501309, y: 0.0000002664566, z: -0.0000000020834305}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 4208179807154459092}
+  m_Children: []
   m_Father: {fileID: 4208179807154417200}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &874921301145850720
@@ -882,12 +881,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4208179807154712688}
   serializedVersion: 2
-  m_LocalRotation: {x: -1.3020945e-10, y: -0.0000000029911225, z: -0.043489594, w: 0.9990539}
-  m_LocalPosition: {x: -0.16612525, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: 0.000000037252907, y: 0.000000029802326, z: 0.1601827, w: 0.9870874}
+  m_LocalPosition: {x: -0.76717466, y: -1.8444616, z: 0}
+  m_LocalScale: {x: 4.0335503, y: 4.0335507, z: 4.0335503}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4208179807154406322}
+  m_Father: {fileID: 2332697463981283730}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2282339638153784978
 MonoBehaviour:
@@ -903,13 +902,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 0}
   shootPoint: {fileID: 4922173985744986968}
-  fireInterval: 5
+  fireInterval: 3
   inaccuracyAngle: 90
   blueProjectile: {fileID: 298535018758749737, guid: 5fc64ebded3cd834ca80647c1997f498,
     type: 3}
   redProjectile: {fileID: 6811471231455483325, guid: 9b9fabda2db28bf40aa776b80b5a5dde,
     type: 3}
   colorGuy: {fileID: 3646044845619475776}
+  velocity: 3
 --- !u!1 &4208179807154715102
 GameObject:
   m_ObjectHideFlags: 0
@@ -1403,7 +1403,7 @@ Transform:
   m_GameObject: {fileID: 4208179807154769634}
   serializedVersion: 2
   m_LocalRotation: {x: -2.1648906e-17, y: 0.7071067, z: 2.1648903e-17, w: 0.7071068}
-  m_LocalPosition: {x: -1.8631373e-10, y: 1.452016, z: -0.004262296}
+  m_LocalPosition: {x: -1.8631371e-10, y: 1.4520159, z: -0.0042622956}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1555,6 +1555,7 @@ Transform:
   m_LocalScale: {x: 0.24792054, y: 0.24792051, z: 0.24792051}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 4208179807154459092}
   - {fileID: 8073648821926432971}
   - {fileID: 6785990771120243763}
   m_Father: {fileID: 4208179807154470856}
@@ -1803,14 +1804,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7992320513089664981}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.22414325, y: -0.6830117, z: 0.12940975, w: 0.68301386}
-  m_LocalPosition: {x: 0.03460617, y: -1.0704489, z: 0}
+  m_LocalRotation: {x: 0.32636267, y: -0.6550406, z: 0.23275234, w: 0.64049625}
+  m_LocalPosition: {x: -0.019729672, y: -0.7131091, z: 0.04849871}
   m_LocalScale: {x: 15.465548, y: 15.4655485, z: 15.4655485}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1222118810831808693}
   m_Father: {fileID: 4208179807154433078}
-  m_LocalEulerAnglesHint: {x: 28.879, y: -92.192, z: -8.499}
+  m_LocalEulerAnglesHint: {x: 46.302, y: -95.914, z: -10.796}
 --- !u!33 &9203808234557308313
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1985,7 +1986,7 @@ Transform:
   m_GameObject: {fileID: 8669184487508962575}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 0.008, z: 1.004}
+  m_LocalPosition: {x: -0, y: -0.002, z: 1.058}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
